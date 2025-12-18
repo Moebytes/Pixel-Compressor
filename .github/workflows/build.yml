@@ -51,22 +51,25 @@ jobs:
       - name: Rebuild native modules
         run: npm run rebuild
 
-      - name: Apply patches
+      - name: Apply patches (macOS/Linux)
+        if: runner.os != 'Windows'
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            Remove-Item -Recurse -Force node_modules\cwebp-bin
-            Copy-Item -Recurse patch\cwebp-bin node_modules\cwebp-bin
+          rm -rf node_modules/cwebp-bin
+          cp -r patch/cwebp-bin node_modules/cwebp-bin
 
-            Remove-Item -Recurse -Force node_modules\mozjpeg
-            Copy-Item -Recurse patch\mozjpeg node_modules\mozjpeg
-          else
-            rm -rf node_modules/cwebp-bin
-            cp -r patch/cwebp-bin node_modules/cwebp-bin
-
-            rm -rf node_modules/mozjpeg
-            cp -r patch/mozjpeg node_modules/mozjpeg
-          fi
+          rm -rf node_modules/mozjpeg
+          cp -r patch/mozjpeg node_modules/mozjpeg
         shell: bash
+
+      - name: Apply patches (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Remove-Item -Recurse -Force node_modules\cwebp-bin
+          Copy-Item -Recurse patch\cwebp-bin node_modules\cwebp-bin
+
+          Remove-Item -Recurse -Force node_modules\mozjpeg
+          Copy-Item -Recurse patch\mozjpeg node_modules\mozjpeg
+        shell: pwsh
 
       - name: Build app
         run: npm run build
