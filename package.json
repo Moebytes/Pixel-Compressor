@@ -106,7 +106,7 @@
     },
     "linux": {
       "target": {
-        "target": "AppImage",
+        "target": "appImage",
         "arch": "x64"
       },
       "category": "Utility",
