@@ -6,13 +6,8 @@
   "scripts": {
     "start": "npm run clean && webpack && cross-env DEVELOPMENT=true electron dist/main.js",
     "clean": "del-cli ./dist",
-    "build": "npm run clean ./build && webpack && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -m -p never",
-    "rebuild": "npm rebuild --runtime=electron --target=14.0.0 --disturl=https://atom.io/download/atom-shell --abi=83",
-    "release": "npm run release:mac && npm run release:win",
-    "release:mac": "npm run clean ./build && webpack && npm run sharp:mac && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -m -p always",
-    "release:win": "npm run clean ./build && webpack && npm run sharp:win && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -w -p always",
-    "sharp:mac": "del-cli ./node_modules/sharp && npm install --platform=darwin --arch=arm64 sharp",
-    "sharp:win": "del-cli ./node_modules/sharp && npm install --platform=win32 --arch=x64 sharp"
+    "build": "npm run clean ./build && webpack && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
+    "rebuild": "npm rebuild --runtime=electron --target=14.0.0 --disturl=https://atom.io/download/atom-shell --abi=83"
   },
   "overrides": {
     "graceful-fs": "^4.2.11"
@@ -48,19 +43,19 @@
       ],
       "extraResources": [
         {
-          "from": "vendor/cjpeg",
+          "from": "vendor/mac/cjpeg",
           "to": "app/vendor/cjpeg"
         },
         {
-          "from": "vendor/cwebp",
+          "from": "vendor/mac/cwebp",
           "to": "app/vendor/cwebp"
         },
         {
-          "from": "vendor/gifsicle",
+          "from": "vendor/mac/gifsicle",
           "to": "app/vendor/gifsicle"
         },
         {
-          "from": "vendor/pngquant",
+          "from": "vendor/mac/pngquant",
           "to": "app/vendor/pngquant"
         }
       ]
@@ -81,11 +76,23 @@
       "extraFiles": [
         "poppler/windows/**"
       ],
-      "files": [
-        "vendor/cjpeg.exe",
-        "vendor/cwebp.exe",
-        "vendor/gifsicle.exe",
-        "vendor/pngquant.exe"
+      "extraResources": [
+        {
+          "from": "vendor/windows/cjpeg.exe",
+          "to": "app/vendor/cjpeg.exe"
+        },
+        {
+          "from": "vendor/windows/cwebp.exe",
+          "to": "app/vendor/cwebp.exe"
+        },
+        {
+          "from": "vendor/windows/gifsicle.exe",
+          "to": "app/vendor/gifsicle.exe"
+        },
+        {
+          "from": "vendor/windows/pngquant.exe",
+          "to": "app/vendor/pngquant.exe"
+        }
       ]
     },
     "nsis": {
@@ -96,6 +103,35 @@
       "createDesktopShortcut": "always",
       "installerSidebar": "./assets/installer.bmp",
       "uninstallerSidebar": "./assets/installer.bmp"
+    },
+    "linux": {
+      "target": {
+        "target": "AppImage",
+        "arch": "x64"
+      },
+      "category": "Utility",
+      "icon": "./assets/icon.png",
+      "extraFiles": [
+        "poppler/linux/**"
+      ],
+      "extraResources": [
+        {
+          "from": "vendor/linux/cjpeg",
+          "to": "app/vendor/cjpeg"
+        },
+        {
+          "from": "vendor/linux/cwebp",
+          "to": "app/vendor/cwebp"
+        },
+        {
+          "from": "vendor/linux/gifsicle",
+          "to": "app/vendor/gifsicle"
+        },
+        {
+          "from": "vendor/linux/pngquant",
+          "to": "app/vendor/pngquant"
+        }
+      ]
     },
     "files": [
       "dist/**/*",

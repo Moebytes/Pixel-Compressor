@@ -1063,10 +1063,10 @@ if (!singleLock) {
     require("@electron/remote/main").enable(window.webContents)
     if (process.platform === "darwin") {
       if (process.env.DEVELOPMENT === "true") {
-        fs.chmodSync(path.join(__dirname, "../vendor/cjpeg"), "777")
-        fs.chmodSync(path.join(__dirname, "../vendor/cwebp"), "777")
-        fs.chmodSync(path.join(__dirname, "../vendor/gifsicle"), "777")
-        fs.chmodSync(path.join(__dirname, "../vendor/pngquant"), "777")
+        fs.chmodSync(path.join(__dirname, "../vendor/mac/cjpeg"), "777")
+        fs.chmodSync(path.join(__dirname, "../vendor/mac/cwebp"), "777")
+        fs.chmodSync(path.join(__dirname, "../vendor/mac/gifsicle"), "777")
+        fs.chmodSync(path.join(__dirname, "../vendor/mac/pngquant"), "777")
       } else {
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cjpeg"), "777")
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cwebp"), "777")
