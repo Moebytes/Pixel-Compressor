@@ -48,6 +48,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Apply patches
+        run: |
+          rm -rf node_modules/cwebp-bin
+          cp -r patch/cwebp-bin node_modules/cwebp-bin
+
+          rm -rf node_modules/mozjpeg
+          cp -r patch/mozjpeg node_modules/mozjpeg
+
       - name: Rebuild native modules
         run: npm run rebuild
 
