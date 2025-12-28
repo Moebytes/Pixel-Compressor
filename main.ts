@@ -24,8 +24,8 @@ import PDFDocument from "@react-pdf/pdfkit"
 import child_process from "child_process"
 import mkvExtractor from "mkv-subtitle-extractor"
 import srt2vtt from "srt-to-vtt"
-import ass2srt from "ass-to-srt"
 import {ID3Writer} from "browser-id3-writer"
+import dumpPDFImages from "./pdf-images"
 
 import util from "util"
 
@@ -35,13 +35,6 @@ require("@electron/remote/main").initialize()
 process.setMaxListeners(0)
 let window: Electron.BrowserWindow | null
 let preview: Electron.BrowserWindow | null
-let popplerPath = undefined as any
-if (process.platform === "darwin") popplerPath = path.join(app.getAppPath(), "../../poppler/mac/bin/pdfimages")
-if (process.platform === "win32") popplerPath = path.join(app.getAppPath(), "../../poppler/windows/bin/pdfimages.exe") 
-if (!fs.existsSync(popplerPath)) popplerPath = undefined
-let pnmPath = undefined as any
-if (process.platform === "darwin") pnmPath = path.join(app.getAppPath(), "../../poppler/mac/bin/pnmtojpeg")
-if (process.platform === "win32") pnmPath = path.join(app.getAppPath(), "../../poppler/windows/bin/pnmtojpeg.exe") 
 autoUpdater.autoDownload = false
 const store = new Store()
 
@@ -54,7 +47,8 @@ ipcMain.handle("song-cover", async (event, files: string[]) => {
   const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
   || path.extname(f).toLowerCase() === ".jpeg"
   || path.extname(f).toLowerCase() === ".png" 
-  || path.extname(f).toLowerCase() === ".webp")
+  || path.extname(f).toLowerCase() === ".webp"
+  || path.extname(f).toLowerCase() === ".avif")
 
   for (let i = 0; i < MP3s.length; i++) {
     if (!images[i]) break
@@ -160,22 +154,6 @@ ipcMain.handle("remove-duplicate-subs", async (event, files: string[]) => {
   }
   shell.openPath(path.dirname(files[0]))
 })
-
-const ppmToJpeg = async (files: string[]) => {
-  const pnmtojpeg = pnmPath ? pnmPath : "pnmtojpeg"
-  for (let i = 0; i < files.length; i++) {
-    await exec(`"${pnmtojpeg}" "${files[i]}" > "${path.dirname(files[i])}/${path.basename(files[i], path.extname(files[i]))}.jpg"`)
-  }
-
-  const promiseArray: any[] = []
-  for (let i = 0; i < files.length; i++) {
-    promiseArray.push(new Promise<void>((resolve) => {
-      fs.unlink(files[i], () => resolve())
-    }))
-  }
-
-  await Promise.all(promiseArray)
-}
 
 const subToVtt = async (subtitles: string[]): Promise<any> => {
   const srtSubs = [] as string[]
@@ -349,7 +327,11 @@ const createPDF = async (dir: string, images: string[]) => {
 ipcMain.handle("pdf-cover", async (event, files: string[]) => {
   const directories = files.filter((f) => fs.lstatSync(f).isDirectory())
   const PDFs = files.filter((f) => path.extname(f) === ".pdf")
-  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" || path.extname(f).toLowerCase() === ".jpeg" || path.extname(f).toLowerCase() === ".png")
+  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
+  || path.extname(f).toLowerCase() === ".jpeg"
+  || path.extname(f).toLowerCase() === ".png" 
+  || path.extname(f).toLowerCase() === ".webp"
+  || path.extname(f).toLowerCase() === ".avif")
 
   let openDir = ""
 
@@ -358,12 +340,15 @@ ipcMain.handle("pdf-cover", async (event, files: string[]) => {
     const saveFilename = path.basename(PDFs[i], path.extname(PDFs[i]))
     const savePath = path.join(dir, saveFilename)
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
-    const pdfimages = popplerPath ? popplerPath : "pdfimages"
-    exec(`cd "${savePath}" && "${pdfimages}" -png -j -q "${PDFs[i]}" "${saveFilename}"`)
+    await dumpPDFImages(PDFs[i], savePath, {type: "jpg"})
     .then(async () => {
       fs.unlinkSync(PDFs[i])
       let images = fs.readdirSync(savePath).map((i) => path.join(savePath, i))
-      images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" || path.extname(f).toLowerCase() === ".png" || path.extname(f).toLowerCase() === ".jpeg")
+      images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
+        || path.extname(f).toLowerCase() === ".jpeg"
+        || path.extname(f).toLowerCase() === ".png" 
+        || path.extname(f).toLowerCase() === ".webp"
+        || path.extname(f).toLowerCase() === ".avif")
       await extractCover(savePath, images)
       try {
         fs.rmdirSync(savePath)
@@ -378,7 +363,11 @@ ipcMain.handle("pdf-cover", async (event, files: string[]) => {
   for (let i = 0; i < directories.length; i++) {
     const dir = directories[i]
     let images = fs.readdirSync(dir).map((i) => path.join(dir, i))
-    images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" || path.extname(f).toLowerCase() === ".png" || path.extname(f).toLowerCase() === ".jpeg")
+    images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
+      || path.extname(f).toLowerCase() === ".jpeg"
+      || path.extname(f).toLowerCase() === ".png" 
+      || path.extname(f).toLowerCase() === ".webp"
+      || path.extname(f).toLowerCase() === ".avif")
     await removeDoubles(images, true)
     if (!openDir) openDir = images[0]
   }
@@ -393,20 +382,22 @@ ipcMain.handle("pdf-cover", async (event, files: string[]) => {
 ipcMain.handle("pdf", async (event, files: string[]) => {
   const directories = files.filter((f) => fs.lstatSync(f).isDirectory())
   const PDFs = files.filter((f) => path.extname(f) === ".pdf")
-  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" || path.extname(f).toLowerCase() === ".png" || path.extname(f).toLowerCase() === ".jpeg")
-  const PPM = files.filter((f) => path.extname(f).toLowerCase() === ".ppm")
-
-  if (PPM.length) {
-    await ppmToJpeg(PPM)
-    return shell.openPath(path.dirname(PPM[0]))
-  }
+  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
+    || path.extname(f).toLowerCase() === ".jpeg"
+    || path.extname(f).toLowerCase() === ".png" 
+    || path.extname(f).toLowerCase() === ".webp"
+    || path.extname(f).toLowerCase() === ".avif")
 
   let openDir = ""
 
   for (let i = 0; i < directories.length; i++) {
     const dir = directories[i]
     let images = fs.readdirSync(dir).map((i) => path.join(dir, i))
-    images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" || path.extname(f).toLowerCase() === ".png" || path.extname(f).toLowerCase() === ".jpeg")
+    images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
+      || path.extname(f).toLowerCase() === ".jpeg"
+      || path.extname(f).toLowerCase() === ".png" 
+      || path.extname(f).toLowerCase() === ".webp"
+      || path.extname(f).toLowerCase() === ".avif")
     await createPDF(dir, images)
     try {
       fs.rmdirSync(dir)
@@ -421,8 +412,7 @@ ipcMain.handle("pdf", async (event, files: string[]) => {
     const saveFilename = path.basename(PDFs[i], path.extname(PDFs[i]))
     const savePath = path.join(dir, saveFilename)
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
-    const pdfimages = popplerPath ? popplerPath : "pdfimages"
-    exec(`cd "${savePath}" && "${pdfimages}" -j -q "${PDFs[i]}" "${saveFilename}"`)
+    await dumpPDFImages(PDFs[i], savePath, {type: "jpg"})
     .then(() => fs.unlinkSync(PDFs[i]))
     .catch((e) => window?.webContents.send("debug", e))
     if (!openDir) openDir = PDFs[0]

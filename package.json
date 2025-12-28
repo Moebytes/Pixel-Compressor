@@ -1,6 +1,6 @@
 {
   "name": "image-compressor",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Compresses, resizes, and renames images.",
   "main": "dist/main.js",
   "scripts": {
@@ -38,9 +38,6 @@
         "arch": "arm64"
       },
       "category": "public.app-category.utilities",
-      "extraFiles": [
-        "poppler/mac/**"
-      ],
       "extraResources": [
         {
           "from": "vendor/mac/cjpeg",
@@ -73,9 +70,6 @@
         "target": "nsis",
         "arch": "x64"
       },
-      "extraFiles": [
-        "poppler/windows/**"
-      ],
       "extraResources": [
         {
           "from": "vendor/windows/cjpeg.exe",
@@ -111,9 +105,6 @@
       },
       "category": "Utility",
       "icon": "./assets/icon.png",
-      "extraFiles": [
-        "poppler/linux/**"
-      ],
       "extraResources": [
         {
           "from": "vendor/linux/cjpeg",
@@ -162,6 +153,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/sharp": "^0.29.3",
+    "copy-webpack-plugin": "^13.0.1",
     "cross-env": "^7.0.3",
     "css-loader": "^5.0.1",
     "del-cli": "^3.0.1",
@@ -189,6 +181,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.1.2",
+    "@napi-rs/canvas": "^0.1.88",
     "@react-pdf/pdfkit": "^3.1.2",
     "ass-to-srt": "^1.2.1",
     "ass-to-vtt": "^1.2.0",
@@ -209,6 +202,7 @@
     "imagemin-webp": "^8.0.0",
     "images-meta": "github:Moestash/images-meta",
     "mkv-subtitle-extractor": "^1.1.1",
+    "pdfjs-dist": "github:Moestash/pdfjs-dist",
     "rc-slider": "^9.7.4",
     "react": "^18.2.0",
     "react-bootstrap": "^1.4.3",
@@ -225,6 +219,3 @@
     "srt-to-vtt": "^1.1.3"
   }
 }
-
-
-

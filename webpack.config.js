@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin")
 const TerserJSPlugin = require("terser-webpack-plugin")
 const path = require("path")
 const webpack = require("webpack")
@@ -74,7 +75,12 @@ module.exports = [
       ]
     },
     plugins: [
-      new webpack.DefinePlugin({"process.env.FLUENTFFMPEG_COV": false})
+      new webpack.DefinePlugin({"process.env.FLUENTFFMPEG_COV": false}),
+      new CopyPlugin({
+        patterns: [
+          {from: "node_modules/pdfjs-dist/build/pdf.worker.min.js", to: "pdf.worker.js"}
+        ]
+      })
     ]
   }
 ]
