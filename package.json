@@ -7,7 +7,7 @@
     "start": "npm run clean && webpack && cross-env DEVELOPMENT=true electron dist/main.js",
     "clean": "del-cli ./dist",
     "build": "npm run clean ./build && webpack && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
-    "rebuild": "npm rebuild --runtime=electron --target=14.0.0 --disturl=https://atom.io/download/atom-shell --abi=83"
+    "rebuild": "electron-rebuild -f -w @napi-rs/canvas"
   },
   "overrides": {
     "graceful-fs": "^4.2.11"
@@ -142,6 +142,7 @@
   "author": "Moebytes",
   "license": "CC BY-NC 4.0",
   "devDependencies": {
+    "@electron/rebuild": "^4.0.2",
     "@types/gif-encoder": "^0.7.1",
     "@types/imagemin": "^8.0.0",
     "@types/imagemin-gifsicle": "^7.0.1",
