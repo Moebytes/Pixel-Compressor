@@ -29,6 +29,8 @@ You can customize the output names. If it results in a blank name (eg. not found
 ### Titlebar Buttons
 There are many utility functions on the titlebar. They do the following:
 
+MP3 - Select an mp3 and an image and the image will get added as the cover art.
+
 VTT - If ASS or SRT files are selected, they will be converted to a VTT file. If MKV videos are selected, the subtitles are
 extracted and converted to VTT. If a directory is selected, all MKV, ASS, and SRT files are converted in that directory. The original files are deleted.
 
@@ -68,4 +70,5 @@ Open an issue on my GitHub repository.
 
 - [Waifu2x GUI](https://github.com/Moebytes/Waifu2x-GUI)
 - [Photo Viewer](https://github.com/Moebytes/Photo-Viewer)
+
 
