@@ -3,7 +3,6 @@ import path from "path"
 import fs from "fs"
 
 const pdfjs = require("pdfjs-dist/build/pdf.js")
-pdfjs.GlobalWorkerOptions.workerSrc = null
 
 interface Options {
     width?: number
