@@ -1,4 +1,4 @@
-## Image Compressor
+## Pixel Compressor
 
 <img src="assets/images/readme.png">
 
@@ -50,6 +50,12 @@ attempts to prevent naming conflicts by renaming files if the name would conflic
 ### Keyboard Shortcuts
 - Ctrl O - Open images
 - Drag and drop - Open images
+
+### Design
+
+Our design is available here: https://www.figma.com/design/lTUtTd5bAHSxvg3uTzNWIA/Pixel-Compressor
+
+*New design is wip
 
 ### Installation
 
