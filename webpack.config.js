@@ -19,7 +19,7 @@ module.exports = [
     optimization: {minimize: true, minimizer: [new TerserJSPlugin({extractComments: false})], moduleIds: "named"},
     module: {
       rules: [
-        {test: /\.(jpe?g|png|gif|svg|mp3|wav|mp4|yml|txt)$/, exclude, use: [{loader: "file-loader", options: {name: "[path][name].[ext]"}}]},
+        {test: /\.(jpe?g|png|gif|svg|mp3|wav|mp4|yml|txt|ttf)$/, exclude, use: [{loader: "file-loader", options: {name: "[path][name].[ext]"}}]},
         {test: /\.html$/, exclude, use: [{loader: "html-loader", options: {minimize: false}}]},
         {test: /\.less$/, exclude, use: [{loader: MiniCssExtractPlugin.loader}, "css-loader", "less-loader"]},
         {test: /\.css$/, use: [{loader: MiniCssExtractPlugin.loader}, "css-loader"]},
@@ -45,7 +45,7 @@ module.exports = [
     optimization: {minimize: true, minimizer: [new TerserJSPlugin({extractComments: false})], moduleIds: "named"},
     module: {
       rules: [
-        {test: /\.(jpe?g|png|gif|svg|mp3|wav|mp4|yml|txt)$/, exclude, use: [{loader: "file-loader", options: {name: "[path][name].[ext]"}}]},
+        {test: /\.(jpe?g|png|gif|svg|mp3|wav|mp4|yml|txt|ttf)$/, exclude, use: [{loader: "file-loader", options: {name: "[path][name].[ext]"}}]},
         {test: /\.html$/, exclude, use: [{loader: "html-loader", options: {minimize: false}}]},
         {test: /\.less$/, exclude, use: [{loader: MiniCssExtractPlugin.loader}, "css-loader", "less-loader"]},
         {test: /\.css$/, use: [{loader: MiniCssExtractPlugin.loader}, "css-loader"]},
@@ -64,14 +64,14 @@ module.exports = [
     entry: "./main",
     mode: "production",
     node: {__dirname: false},
-    externals: {"sharp": "commonjs sharp"},
+    externals: {"sharp": "commonjs sharp", "@napi-rs/canvas": "commonjs2 @napi-rs/canvas"},
     output: {filename: "main.js", path: path.resolve(__dirname, "./dist")},
     resolve: {extensions: [".js", ".jsx", ".ts", ".tsx"], alias: {"react-dom$": "react-dom/profiling", "scheduler/tracing": "scheduler/tracing-profiling"},
     fallback: {canvas: false}},
     optimization: {minimize: true, minimizer: [new TerserJSPlugin({extractComments: false})], moduleIds: "named"},
     module: {
       rules: [
-          {test: /\.(jpe?g|png|gif|svg|mp3|wav|mp4|yml|txt)$/, exclude, use: [{loader: "file-loader", options: {name: "[path][name].[ext]"}}]},
+          {test: /\.(jpe?g|png|gif|svg|mp3|wav|mp4|yml|txt|ttf)$/, exclude, use: [{loader: "file-loader", options: {name: "[path][name].[ext]"}}]},
           {test: /\.afm$/, loader: "raw-loader"},
           {test: /\.(tsx?|jsx?)$/, exclude, use: [{loader: "ts-loader", options: {transpileOnly: true}}]},
           {test: /\.node$/, loader: "node-loader"},

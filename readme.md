@@ -2,7 +2,7 @@
 
 <img src="assets/images/readme.png">
 
-This is a bulk image compressor, resizer, and renamer. Great for organizing your anime art collection. You can reduce the size of images/GIFs, delete duplicate images, and rename pictures according to the source (from saucenao).
+This is an image compressor and resizer.
 
 ### Features:
 - Compress and resize images (PNG/JPG/WEBP/AVIF/JXL) and GIFs/Animated WebPs
@@ -31,21 +31,16 @@ There are many utility functions on the titlebar. They do the following:
 
 MP3 - Select an mp3 and an image and the image will get added as the cover art.
 
-VTT - If ASS or SRT files are selected, they will be converted to a VTT file. If MKV videos are selected, the subtitles are
-extracted and converted to VTT. If a directory is selected, all MKV, ASS, and SRT files are converted in that directory. The original files are deleted.
+VTT - If ASS or SRT files are selected, they will be converted to VTT subtitles. If MKV videos are selected, the subtitles are
+extracted and converted to VTT. 
 
-Rename - Select files within a directory and they are renamed according to the name of the directory. For example, if the directory is named 
-"Yuru Yuri" the files will be renamed "Yuru Yuri 1", "Yuru Yuri 2", etc. going by alphabetic order.
+Rename - Select files within a directory and they are renamed according to the name of the directory. For example, if the directory is named "Yuru Yuri" the files will be renamed "Yuru Yuri 1", "Yuru Yuri 2", etc. going by alphabetic order.
 
-Image Cover - If PDF files are selected, it extracts the first image (the cover image). If a directory is selected, it converts all double
-pages to single pages (images with twice the width of all others). If images are selected, it converts all double pages to singles - if all images are the same width,
-they are all treated as double pages. All original files are deleted.
+Image Cover - If PDF files are selected, it extracts the first image (the cover image). If a directory or images are selected, it converts all double pages to single pages (images with twice the width of all others).
 
-PDF -  If PDF files are selected, it converts it into a directory of images. If directories or images are selected, it converts them into PDF files. Sometimes the first function results in PPM image files, if you select PPM files they will be converted to JPG files.
+PDF -  If PDF files are selected, it converts it into a directory of images. If directories or images are selected, it converts them into PDF files.
 
-Flatten - Flattens a directory, meaning that all files in all sub-directories are moved to the top level and the sub-directories are removed. This
-attempts to prevent naming conflicts by renaming files if the name would conflict with another.
-
+Flatten - Flattens a directory, meaning that all files in all sub-directories are moved to the top level and the sub-directories are removed. This attempts to prevent naming conflicts by renaming files if the name would conflict with another.
 
 ### Keyboard Shortcuts
 - Ctrl O - Open images
@@ -59,7 +54,7 @@ Our design is available here: https://www.figma.com/design/lTUtTd5bAHSxvg3uTzNWI
 
 ### Installation
 
-Download the installer from the [releases](https://github.com/Moebytes/Image-Compressor/releases) tab.
+Download from [releases](https://github.com/Moebytes/Image-Compressor/releases).
 
 ### MacOS
 
@@ -68,13 +63,7 @@ On MacOS unsigned applications won't open, run this to remove the quarantine fla
 xattr -d com.apple.quarantine "/Applications/Image Compressor.app"
 ```
 
-### Bugs and Requests
-
-Open an issue on my GitHub repository. 
-
 ### Also See
 
 - [Waifu2x GUI](https://github.com/Moebytes/Waifu2x-GUI)
-- [Photo Viewer](https://github.com/Moebytes/Photo-Viewer)
-
 

@@ -1,10 +1,7 @@
-import {ipcRenderer, webFrame} from "electron"
-import {shell} from "@electron/remote"
 import path from "path"
-import React, {useContext, useEffect, useRef, useState, useReducer} from "react"
+import React, { useEffect, useRef, useState, useReducer} from "react"
 import {ProgressBar} from "react-bootstrap"
 import pSBC from "shade-blend-color"
-import fs from "fs"
 import arrow from "../assets/icons/arrow.png"
 import closeContainerHover from "../assets/icons/closeContainer-hover.png"
 import closeContainer from "../assets/icons/closeContainer.png"
@@ -16,10 +13,9 @@ import stopButtonHover from "../assets/icons/stop-hover.png"
 import stopButton from "../assets/icons/stop.png"
 import trashButtonHover from "../assets/icons/trash-hover.png"
 import trashButton from "../assets/icons/trash.png"
-import {DirectoryContext, QualityContext, OverwriteContext, IgnoreBelowContext, ResizeWidthContext, ResizeHeightContext, 
-PercentageContext, KeepRatioContext, RenameContext, FormatContext, ProgressiveContext} from "../renderer"
+import {useCompressSelector} from "../store"
 import functions from "../structures/functions"
-import "../styles/filecontainer.less"
+import "./styles/filecontainer.less"
 
 interface FileContainerProps {
     id: number
@@ -32,17 +28,9 @@ interface FileContainerProps {
 }
 
 const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileContainerProps) => {
-    const {quality} = useContext(QualityContext)
-    const {overwrite} = useContext(OverwriteContext)
-    const {ignoreBelow} = useContext(IgnoreBelowContext)
-    const {resizeWidth} = useContext(ResizeWidthContext)
-    const {resizeHeight} = useContext(ResizeHeightContext)
-    const {percentage} = useContext(PercentageContext)
-    const {keepRatio} = useContext(KeepRatioContext)
-    const {rename} = useContext(RenameContext)
-    const {format} = useContext(FormatContext)
-    const {progressive, setProgressive} = useContext(ProgressiveContext)
-    const {directory, setDirectory} = useContext(DirectoryContext)
+    const {quality, overwrite, ignoreBelow, resizeWidth, resizeHeight,
+        percentage, keepRatio, rename, format, progressive, directory
+    } = useCompressSelector()
     const [hover, setHover] = useState(false)
     const [hoverClose, setHoverClose] = useState(false)
     const [hoverLocation, setHoverLocation] = useState(false)
@@ -65,8 +53,8 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
     const [newBuffer, setNewBuffer] = useState(null as unknown as Buffer)
     const [newFileSize, setNewFileSize] = useState("0KB")
     const [newDimension, setNewDimension] = useState(`${props.width}x${props.height}`)
-    const progressBarRef = useRef(null) as React.RefObject<HTMLDivElement>
-    const fileContainerRef = useRef(null) as React.RefObject<HTMLElement>
+    const progressBarRef = useRef<HTMLDivElement>(null)
+    const fileContainerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const conversionStarted = (event: any, info: {id: number}) => {
@@ -96,19 +84,19 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
         const clearAll = () => {
             setClearSignal(true)
         }
-        ipcRenderer.on("conversion-started", conversionStarted)
-        ipcRenderer.on("conversion-finished", conversionFinished)
-        ipcRenderer.on("start-all", startAll)
-        ipcRenderer.on("clear-all", clearAll)
-        ipcRenderer.on("update-color", forceUpdate)
-        ipcRenderer.on("deleted-source", deletedSource)
+        window.ipcRenderer.on("conversion-started", conversionStarted)
+        window.ipcRenderer.on("conversion-finished", conversionFinished)
+        window.ipcRenderer.on("start-all", startAll)
+        window.ipcRenderer.on("clear-all", clearAll)
+        window.ipcRenderer.on("update-color", forceUpdate)
+        window.ipcRenderer.on("deleted-source", deletedSource)
         return () => {
-            ipcRenderer.removeListener("conversion-started", conversionStarted)
-            ipcRenderer.removeListener("conversion-finished", conversionFinished)
-            ipcRenderer.removeListener("start-all", startAll)
-            ipcRenderer.removeListener("clear-all", clearAll)
-            ipcRenderer.removeListener("update-color", forceUpdate)
-            ipcRenderer.removeListener("deleted-source", deletedSource)
+            window.ipcRenderer.removeListener("conversion-started", conversionStarted)
+            window.ipcRenderer.removeListener("conversion-finished", conversionFinished)
+            window.ipcRenderer.removeListener("start-all", startAll)
+            window.ipcRenderer.removeListener("clear-all", clearAll)
+            window.ipcRenderer.removeListener("update-color", forceUpdate)
+            window.ipcRenderer.removeListener("deleted-source", deletedSource)
         }
     }, [])
 
@@ -126,28 +114,28 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
 
     const updateRealtime = async () => {
         if (output) return
-        const {buffer, fileSize} = await ipcRenderer.invoke("compress-realtime", {id: props.id, source: props.source, dest: directory, 
+        const {buffer, fileSize} = await window.ipcRenderer.invoke("compress-realtime", {id: props.id, source: props.source, dest: directory, 
         fileSize: props.fileSize, width: props.width, height: props.height, quality, overwrite, ignoreBelow, resizeWidth, resizeHeight, 
         percentage, keepRatio, rename, format, progressive})
         setNewBuffer(buffer)
         setNewFileSize(functions.readableFileSize(fileSize))
         const type = format === "original" ? path.extname(props.source).replaceAll(".", "") : format
-        ipcRenderer.invoke("preview-realtime", {id: props.id, newSource: functions.bufferToBase64(functions.arrayBufferToBuffer(buffer), type), newFileSize: functions.readableFileSize(fileSize)})
+        window.ipcRenderer.invoke("preview-realtime", {id: props.id, newSource: functions.bufferToBase64(functions.arrayBufferToBuffer(buffer), type), newFileSize: functions.readableFileSize(fileSize)})
         await functions.timeout(5000)
     }
 
     const updateDimensions = () => {
         if (output) return
-        const {width, height} = functions.parseNewDimensions(props.width, props.height, resizeWidth, resizeHeight, percentage, keepRatio)
+        const {width, height} = functions.parseNewDimensions(props.width, props.height, Number(resizeWidth), Number(resizeHeight), percentage, keepRatio)
         setNewDimension(`${width}x${height}`)
     }
 
     const startConversion = async (startAll?: boolean) => {
         if (started) return
         setStartSignal(false)
-        webFrame.clearCache()
+        window.webFrame.clearCache()
         await functions.timeout(props.id)
-        ipcRenderer.invoke("compress", {id: props.id, source: props.source, dest: directory, fileSize: props.fileSize, width: props.width, 
+        window.ipcRenderer.invoke("compress", {id: props.id, source: props.source, dest: directory, fileSize: props.fileSize, width: props.width, 
         height: props.height, quality, overwrite, ignoreBelow, resizeWidth, resizeHeight, percentage, keepRatio, rename, format, progressive}, startAll)
         if (!startAll) {
             setStarted(true)
@@ -156,17 +144,17 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
     }
 
     const closeConversion = () => {
-        ipcRenderer.invoke("move-queue", props.id)
-        if (!output) ipcRenderer.invoke("delete-conversion", props.id)
-        ipcRenderer.invoke("close-conversion", props.id)
+        window.ipcRenderer.invoke("move-queue", props.id)
+        if (!output) window.ipcRenderer.invoke("delete-conversion", props.id)
+        window.ipcRenderer.invoke("close-conversion", props.id)
         props.remove(props.id)
     }
 
     const deleteConversion = async () => {
         if (deleted) return
-        const success = await ipcRenderer.invoke("delete-conversion", props.id, true)
+        const success = await window.ipcRenderer.invoke("delete-conversion", props.id, true)
         if (success) {
-            ipcRenderer.invoke("move-queue")
+            window.ipcRenderer.invoke("move-queue")
             setDeleted(true)
         }
     }
@@ -174,9 +162,9 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
     const stopConversion = async () => {
         if (stopped) return
         if (output) return
-        const success = await ipcRenderer.invoke("stop-conversion", props.id)
+        const success = await window.ipcRenderer.invoke("stop-conversion", props.id)
         if (success) {
-            ipcRenderer.invoke("move-queue")
+            window.ipcRenderer.invoke("move-queue")
             setStopped(true)
         }
     }
@@ -189,7 +177,7 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
             const color = colors[Math.floor(Math.random() * colors.length)]
             setBackgroundColor(color)
         }
-        const theme = await ipcRenderer.invoke("get-theme")
+        const theme = await window.ipcRenderer.invoke("get-theme")
         if (theme === "light") {
             const text = fileContainerRef.current?.querySelectorAll(".file-text, .file-text-alt") as NodeListOf<HTMLElement>
             text.forEach((t) => {
@@ -271,11 +259,10 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
 
     const openLocation = (direct?: boolean) => {
         const location = output ? output : props.source
-        if (!fs.existsSync(location)) return
         if (direct) {
-            shell.openPath(path.normalize(location))
+            window.shell.openPath(path.normalize(location))
         } else {
-            shell.showItemInFolder(path.normalize(location))
+            window.shell.showItemInFolder(path.normalize(location))
         }
     }
 
@@ -294,7 +281,7 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
     const preview = (event: React.MouseEvent<HTMLElement>) => {
         const title = output ? functions.cleanTitle(path.basename(output)) : functions.cleanTitle(path.basename(props.source))
         const type = format === "original" ? path.extname(props.source).replaceAll(".", "") : format
-        if (event.button === 2) ipcRenderer.invoke("preview", {id: props.id, title, source: props.source, fileSize: props.fileSize, newSource: functions.bufferToBase64(functions.arrayBufferToBuffer(newBuffer), type), newFileSize})
+        if (event.button === 2) window.ipcRenderer.invoke("preview", {id: props.id, title, source: props.source, fileSize: props.fileSize, newSource: functions.bufferToBase64(functions.arrayBufferToBuffer(newBuffer), type), newFileSize})
     }
 
     const delayPress = (event: React.MouseEvent<HTMLElement>) => {

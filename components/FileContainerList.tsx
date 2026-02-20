@@ -1,14 +1,12 @@
-import {ipcRenderer} from "electron"
-import fs from "fs"
-import React, {useContext, useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import Reorder from "react-reorder"
-import {ClearAllContext} from "../renderer"
+import {useActionActions} from "../store"
 import functions from "../structures/functions"
-import "../styles/filecontainerlist.less"
 import FileContainer from "./FileContainer"
+import "./styles/filecontainerlist.less"
 
 const FileContainerList: React.FunctionComponent = (props) => {
-    const {clearAll, setClearAll} = useContext(ClearAllContext)
+    const {setClearAll} = useActionActions()
     const [containers, setContainers] = useState([] as  Array<{id: number, started: boolean, jsx: any}>)
     const [addSignal, setAddSignal] = useState(null) as any
     useEffect(() => {
@@ -17,8 +15,8 @@ const FileContainerList: React.FunctionComponent = (props) => {
         }
         const addFiles = async (event: any, files: string[], identifiers: number[]) => {
             for (let i = 0; i < files.length; i++) {
-                const dimensions = await ipcRenderer.invoke("get-dimensions", files[i])
-                const fileSize = functions.readableFileSize(fs.statSync(files[i]).size)
+                const dimensions = await window.ipcRenderer.invoke("get-dimensions", files[i])
+                const fileSize = functions.readableFileSize(dimensions.size)
                 setContainers((prev) => {
                     let newState = [...prev]
                     newState = [...newState, {id: identifiers[i], started: false, jsx: <FileContainer key={identifiers[i]} id={identifiers[i]} height={dimensions.height} width={dimensions.width} source={files[i]} fileSize={fileSize} setStart={setStarted} remove={removeContainer}/>}]
@@ -26,11 +24,11 @@ const FileContainerList: React.FunctionComponent = (props) => {
                 })
             }
         }
-        ipcRenderer.on("add-files", addFiles)
-        ipcRenderer.on("add-file-id", addFile)
+        window.ipcRenderer.on("add-files", addFiles)
+        window.ipcRenderer.on("add-file-id", addFile)
         return () => {
-            ipcRenderer.removeListener("add-files", addFiles)
-            ipcRenderer.removeListener("add-file-id", addFile)
+            window.ipcRenderer.removeListener("add-files", addFiles)
+            window.ipcRenderer.removeListener("add-file-id", addFile)
         }
     }, [])
 
@@ -44,8 +42,8 @@ const FileContainerList: React.FunctionComponent = (props) => {
         setAddSignal(null)
         let index = containers.findIndex((c) => c?.id === signal.pos)
         if (index === -1) index = containers.length
-        const dimensions = await ipcRenderer.invoke("get-dimensions", signal.file)
-        const fileSize = functions.readableFileSize(fs.statSync(signal.file).size)
+        const dimensions = await window.ipcRenderer.invoke("get-dimensions", signal.file)
+        const fileSize = functions.readableFileSize(dimensions.size)
         setContainers((prev) => {
             const newState = [...prev]
             newState.splice(index + 1, 0, {id: signal.id, started: false, jsx: <FileContainer key={signal.id} id={signal.id} height={dimensions.height} width={dimensions.width} source={signal.file} fileSize={fileSize} setStart={setStarted} remove={removeContainer}/>})

@@ -1,5 +1,4 @@
-import {ipcRenderer} from "electron"
-import React, {useContext, useState, useEffect} from "react"
+import React, {useState, useEffect} from "react"
 import clearAllButtonHover from "../assets/icons/clearAll-hover.png"
 import clearAllButton from "../assets/icons/clearAll.png"
 import clearAllButtonDarkHover from "../assets/icons/clearAll-hover-dark.png"
@@ -12,11 +11,11 @@ import deleteDuplicatesButtonHover from "../assets/icons/deleteDuplicates-hover.
 import deleteDuplicatesButton from "../assets/icons/deleteDuplicates.png"
 import deleteDuplicatesButtonDarkHover from "../assets/icons/deleteDuplicates-hover-dark.png"
 import deleteDuplicatesButtonDark from "../assets/icons/deleteDuplicates-dark.png"
-import {ClearAllContext} from "../renderer"
-import "../styles/groupaction.less"
+import {useActionSelector} from "../store"
+import "./styles/groupaction.less"
 
 const GroupAction: React.FunctionComponent = (props) => {
-    const {clearAll, setClearAll} = useContext(ClearAllContext)
+    const {clearAll} = useActionSelector()
     const [startHover, setStartHover] = useState(false)
     const [clearHover, setClearHover] = useState(false)
     const [deleteHover, setDeleteHover] = useState(false)
@@ -26,24 +25,24 @@ const GroupAction: React.FunctionComponent = (props) => {
         const updateColor = (event: any, color: string) => {
             setColor(color)
         }
-        ipcRenderer.on("update-color", updateColor)
+        window.ipcRenderer.on("update-color", updateColor)
         return () => {
-            ipcRenderer.removeListener("update-color", updateColor)
+            window.ipcRenderer.removeListener("update-color", updateColor)
         }
     }, [])
 
     const start = () => {
-        ipcRenderer.invoke("start-all")
+        window.ipcRenderer.invoke("start-all")
         setStartHover(false)
     }
 
     const clear = () => {
-        ipcRenderer.invoke("clear-all")
+        window.ipcRenderer.invoke("clear-all")
         setClearHover(false)
     }
 
     const deleteDupes = () => {
-        ipcRenderer.invoke("delete-duplicates")
+        window.ipcRenderer.invoke("delete-duplicates")
         setDeleteHover(false)
     }
 

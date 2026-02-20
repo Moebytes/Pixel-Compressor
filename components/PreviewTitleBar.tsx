@@ -1,6 +1,4 @@
-import React, {useState, useEffect} from "react"
-import {ipcRenderer} from "electron"
-import {getCurrentWindow} from "@electron/remote"
+import React, {useState} from "react"
 import minimizeButton from "../assets/icons/previewMinimize.png"
 import maximizeButton from "../assets/icons/previewMaximize.png"
 import closeButton from "../assets/icons/previewClose.png"
@@ -11,7 +9,7 @@ import zoomInButton from "../assets/icons/zoomIn.png"
 import zoomInButtonHover from "../assets/icons/zoomIn-hover.png"
 import zoomOutButton from "../assets/icons/zoomOut.png"
 import zoomOutButtonHover from "../assets/icons/zoomOut-hover.png"
-import "../styles/previewtitlebar.less"
+import "./styles/previewtitlebar.less"
 
 interface PreviewTitleBarProps {
     title: string
@@ -23,30 +21,31 @@ const PreviewTitleBar: React.FunctionComponent<PreviewTitleBarProps> = (props: P
     let [hoverMax, setHoverMax] = useState(false)
     let [hoverIn, setHoverIn] = useState(false)
     let [hoverOut, setHoverOut] = useState(false)
+    const [iconHover, setIconHover] = useState(false)
 
-    const minimize = () => {
-        getCurrentWindow().minimize()
+    const onMouseDown = () => {
+        window.ipcRenderer.send("moveWindow")
+    }
+
+    const close = () => {
+        window.ipcRenderer.invoke("close")
+    }
+
+    const minimize = async () => {
+        await window.ipcRenderer.invoke("minimize")
+        setIconHover(false)
     }
 
     const maximize = () => {
-        const window = getCurrentWindow()
-        if (window.isMaximized()) {
-            window.unmaximize()
-        } else {
-            window.maximize()
-        }
-    }
-    
-    const close = () => {
-        getCurrentWindow().close()
+        window.ipcRenderer.invoke("maximize")
     }
 
     const zoomOut = () => {
-        ipcRenderer.invoke("zoom-out")
+        window.ipcRenderer.invoke("zoom-out")
     }
 
     const zoomIn = () => {
-        ipcRenderer.invoke("zoom-in")
+        window.ipcRenderer.invoke("zoom-in")
     }
 
     return (

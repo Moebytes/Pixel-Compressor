@@ -1,58 +1,50 @@
-import {ipcRenderer} from "electron"
-import {shell} from "@electron/remote"
-import React, {useContext, useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 import {Dropdown, DropdownButton} from "react-bootstrap"
 import folderButton from "../assets/icons/folder.png"
 import folderButtonHover from "../assets/icons/folder-hover.png"
-import {DirectoryContext, QualityContext, OverwriteContext, IgnoreBelowContext, ResizeWidthContext, 
-ResizeHeightContext, PercentageContext, KeepRatioContext, RenameContext, FormatContext, ProgressiveContext} from "../renderer"
+import {useCompressSelector, useCompressActions} from "../store"
 import Slider from "rc-slider"
 import functions from "../structures/functions"
-import "../styles/optionsbar.less"
+import "./styles/optionsbar.less"
 
 const OptionsBar: React.FunctionComponent = (props) => {
-    const {quality, setQuality} = useContext(QualityContext)
-    const {overwrite, setOverwrite} = useContext(OverwriteContext)
-    const {ignoreBelow, setIgnoreBelow} = useContext(IgnoreBelowContext)
-    const {resizeWidth, setResizeWidth} = useContext(ResizeWidthContext)
-    const {resizeHeight, setResizeHeight} = useContext(ResizeHeightContext)
-    const {percentage, setPercentage} = useContext(PercentageContext)
-    const {keepRatio, setKeepRatio} = useContext(KeepRatioContext)
-    const {rename, setRename} = useContext(RenameContext)
-    const {format, setFormat} = useContext(FormatContext)
-    const {directory, setDirectory} = useContext(DirectoryContext)
-    const {progressive, setProgressive} = useContext(ProgressiveContext)
+    const {quality, overwrite, ignoreBelow, resizeWidth, resizeHeight,
+        percentage, keepRatio, rename, format, progressive, directory
+    } = useCompressSelector()
+    const {setQuality, setOverwrite, setIgnoreBelow, setResizeWidth, setResizeHeight,
+        setPercentage, setKeepRatio, setRename, setFormat, setProgressive, setDirectory
+    } = useCompressActions()
     const [folderHover, setFolderHover] = useState(false)
     const [id, setID] = useState(1)
 
     useEffect(() => {
-        ipcRenderer.invoke("get-downloads-folder").then((f) => setDirectory(f))
+        window.ipcRenderer.invoke("get-downloads-folder").then((f) => setDirectory(f))
         initSettings()
         const addFile = (event: any, file: string, pos: number) => {
             setID((prev) => {
-                ipcRenderer.invoke("add-file-id", file, pos, prev)
+                window.ipcRenderer.invoke("add-file-id", file, pos, prev)
                 return prev + 1
             })
         }
-        ipcRenderer.on("add-file", addFile)
-        ipcRenderer.on("upload", upload)
+        window.ipcRenderer.on("add-file", addFile)
+        window.ipcRenderer.on("upload", upload)
         return () => {
-            ipcRenderer.removeListener("add-file", addFile)
-            ipcRenderer.removeListener("upload", upload)
+            window.ipcRenderer.removeListener("add-file", addFile)
+            window.ipcRenderer.removeListener("upload", upload)
         }
     }, [])
 
     useEffect(() => {
-        ipcRenderer.invoke("store-settings", {quality, directory, overwrite, ignoreBelow, resizeWidth, resizeHeight, 
+        window.ipcRenderer.invoke("store-settings", {quality, directory, overwrite, ignoreBelow, resizeWidth, resizeHeight, 
         percentage, keepRatio, rename, format, progressive})
-        ipcRenderer.on("on-drop", onDrop)
+        window.ipcRenderer.on("on-drop", onDrop)
         return () => {
-            ipcRenderer.removeListener("on-drop", onDrop)
+            window.ipcRenderer.removeListener("on-drop", onDrop)
         }
     })
     
     const initSettings = async () => {
-        const settings = await ipcRenderer.invoke("init-settings")
+        const settings = await window.ipcRenderer.invoke("init-settings")
         if (settings) {
             setQuality(settings.quality)
             setOverwrite(settings.overwrite)
@@ -68,7 +60,7 @@ const OptionsBar: React.FunctionComponent = (props) => {
     }
     
     const changeDirectory = async () => {
-        const dir = await ipcRenderer.invoke("select-directory")
+        const dir = await window.ipcRenderer.invoke("select-directory")
         if (dir) setDirectory(dir)
     }
 
@@ -102,12 +94,12 @@ const OptionsBar: React.FunctionComponent = (props) => {
                 counter += 1
                 setID((prev) => prev + 1)
             }
-            ipcRenderer.invoke("add-files", files, identifers)
+            window.ipcRenderer.invoke("add-files", files, identifers)
         }
     }
 
     const upload = async () => {
-        const files = await ipcRenderer.invoke("select-files")
+        const files = await window.ipcRenderer.invoke("select-files")
         if (files[0]) {
             const identifers = []
             let counter = id
@@ -117,7 +109,7 @@ const OptionsBar: React.FunctionComponent = (props) => {
                 counter += 1
                 setID((prev) => prev + 1)
             }
-            ipcRenderer.invoke("add-files", files, identifers)
+            window.ipcRenderer.invoke("add-files", files, identifers)
         }
     }
 
@@ -126,17 +118,17 @@ const OptionsBar: React.FunctionComponent = (props) => {
             <div className="options-bar-row">
                 <button onClick={() => upload()} className="upload-button" ><span>Upload</span></button>
                 <p className="options-bar-text">Quality:</p>
-                <Slider className="options-slider" onChange={(value) => setQuality(value)} min={1} max={100} step={1} value={quality}/>
+                <Slider className="options-slider" onChange={(value) => setQuality(value as number)} min={1} max={100} step={1} value={quality}/>
                 <p className="options-bar-text">{quality}%</p>
             </div>
             <div className="options-bar-row">
                 <div className="download-location">
                     <img className="download-location-img" width="25" height="25" src={folderHover ? folderButtonHover : folderButton} onMouseEnter={() => setFolderHover(true)} onMouseLeave={() => setFolderHover(false)} onClick={changeDirectory}/>
-                    <p><span className="download-location-text" onDoubleClick={() => shell.openPath(directory)}>{directory}</span></p>
+                    <p><span className="download-location-text" onDoubleClick={() => window.shell.openPath(directory)}>{directory}</span></p>
                 </div>
                 <div className="options-bar-box">
-                    <input className="options-bar-checkbox" type="checkbox" checked={overwrite} onChange={() => setOverwrite((prev: boolean) => !prev)}/>
-                    <p className="options-bar-text pointer" onClick={() => setOverwrite((prev: boolean) => !prev)}>Overwrite</p>
+                    <input className="options-bar-checkbox" type="checkbox" checked={overwrite} onChange={() => setOverwrite(!overwrite)}/>
+                    <p className="options-bar-text pointer" onClick={() => setOverwrite(!overwrite)}>Overwrite</p>
                 </div>
                 <div className="options-bar-box">
                     <p className="options-bar-text">Ignore Below:</p>
@@ -145,12 +137,12 @@ const OptionsBar: React.FunctionComponent = (props) => {
             </div>
             <div className="options-bar-row">
                 <div className="options-bar-box">
-                    <input className="options-bar-checkbox" type="checkbox" checked={percentage} onChange={() => setPercentage((prev: boolean) => !prev)}/>
-                    <p className="options-bar-text pointer" onClick={() => setPercentage((prev: boolean) => !prev)}>Percentage</p>
+                    <input className="options-bar-checkbox" type="checkbox" checked={percentage} onChange={() => setPercentage(!percentage)}/>
+                    <p className="options-bar-text pointer" onClick={() => setPercentage(!percentage)}>Percentage</p>
                 </div>
                 <div className="options-bar-box">
-                    <input className="options-bar-checkbox" type="checkbox" checked={keepRatio} onChange={() => setKeepRatio((prev: boolean) => !prev)}/>
-                    <p className="options-bar-text pointer" onClick={() => setKeepRatio((prev: boolean) => !prev)}>Keep Ratio</p>
+                    <input className="options-bar-checkbox" type="checkbox" checked={keepRatio} onChange={() => setKeepRatio(!keepRatio)}/>
+                    <p className="options-bar-text pointer" onClick={() => setKeepRatio(!keepRatio)}>Keep Ratio</p>
                 </div>
                 {keepRatio ?
                 <div className="options-bar-box">
@@ -191,8 +183,8 @@ const OptionsBar: React.FunctionComponent = (props) => {
                     </DropdownButton>
                 </div>
                 <div className="options-bar-box">
-                    <input className="options-bar-checkbox" type="checkbox" checked={progressive} onChange={() => setProgressive((prev: boolean) => !prev)}/>
-                    <p className="options-bar-text pointer" onClick={() => setProgressive((prev: boolean) => !prev)}>Progressive</p>
+                    <input className="options-bar-checkbox" type="checkbox" checked={progressive} onChange={() => setProgressive(!progressive)}/>
+                    <p className="options-bar-text pointer" onClick={() => setProgressive(!progressive)}>Progressive</p>
                 </div>
             </div>
         </section>

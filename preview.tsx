@@ -1,10 +1,8 @@
-import {ipcRenderer} from "electron"
 import React, {useState, useEffect, useRef} from "react"
-import ReactDom from "react-dom"
+import {createRoot} from "react-dom/client"
 import PreviewTitleBar from "./components/PreviewTitleBar"
 import {TransformWrapper, TransformComponent} from "react-zoom-pan-pinch"
 import {ReactCompareSlider, ReactCompareSliderHandle} from "react-compare-slider"
-import functions from "./structures/functions"
 import "./preview.less"
 
 const App: React.FunctionComponent = () => {
@@ -33,13 +31,13 @@ const App: React.FunctionComponent = () => {
                 setNewFileSize(info.newFileSize)
             }
         }
-        ipcRenderer.on("update-buffer", updateBuffer)
-        ipcRenderer.on("zoom-in", zoomIn)
-        ipcRenderer.on("zoom-out", zoomOut)
+        window.ipcRenderer.on("update-buffer", updateBuffer)
+        window.ipcRenderer.on("zoom-in", zoomIn)
+        window.ipcRenderer.on("zoom-out", zoomOut)
         return () => {
-            ipcRenderer.removeListener("update-buffer", updateBuffer)
-            ipcRenderer.removeListener("zoom-in", zoomIn)
-            ipcRenderer.removeListener("zoom-out", zoomOut)
+            window.ipcRenderer.removeListener("update-buffer", updateBuffer)
+            window.ipcRenderer.removeListener("zoom-in", zoomIn)
+            window.ipcRenderer.removeListener("zoom-out", zoomOut)
         }
     }, [])
 
@@ -50,9 +48,9 @@ const App: React.FunctionComponent = () => {
                 setNewFileSize(info.newFileSize)
             }
         }
-        ipcRenderer.on("update-buffer-realtime", updateBufferRealtime)
+        window.ipcRenderer.on("update-buffer-realtime", updateBufferRealtime)
         return () => {
-            ipcRenderer.removeListener("update-buffer-realtime", updateBufferRealtime)
+            window.ipcRenderer.removeListener("update-buffer-realtime", updateBufferRealtime)
         }
     })
 
@@ -87,4 +85,5 @@ const App: React.FunctionComponent = () => {
     )
 }
 
-ReactDom.render(<App/>, document.getElementById("root"))
+const root = createRoot(document.getElementById("root")!)
+root.render(<App/>)

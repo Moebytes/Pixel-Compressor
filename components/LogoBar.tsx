@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from "react"
+import React from "react"
 import logo from "../assets/icons/logo.png"
-import functions from "../structures/functions"
-import "../styles/logobar.less"
+import "./styles/logobar.less"
 
-const LogoBar: React.FunctionComponent = (props) => {
+const LogoBar: React.FunctionComponent = () => {
     return (
         <section className="logo-bar">
             <div className="logo-bar-container">

@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: Image-Compressor
-  ARTIFACT_PREFIX: image-compressor
+  APP_NAME: Pixel-Compressor
+  ARTIFACT_PREFIX: pixel-compressor
 
 permissions:
   contents: write

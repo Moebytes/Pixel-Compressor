@@ -1,169 +1,155 @@
-import {ipcRenderer} from "electron"
-import {getCurrentWindow, shell} from "@electron/remote"
-import React, {useEffect, useState} from "react"
-import closeButtonHover from "../assets/icons/close-hover.png"
-import closeButton from "../assets/icons/close.png"
-import appIcon from "../assets/icons/icon.png"
-import maximizeButtonHover from "../assets/icons/maximize-hover.png"
-import maximizeButton from "../assets/icons/maximize.png"
-import minimizeButtonHover from "../assets/icons/minimize-hover.png"
-import minimizeButton from "../assets/icons/minimize.png"
-import starButtonHover from "../assets/icons/star-hover.png"
-import starButton from "../assets/icons/star.png"
-import updateButtonHover from "../assets/icons/update-hover.png"
-import updateButton from "../assets/icons/update.png"
-import pack from "../package.json"
-import lightButton from "../assets/icons/light.png"
-import lightButtonHover from "../assets/icons/light-hover.png"
-import darkButton from "../assets/icons/dark.png"
-import darkButtonHover from "../assets/icons/dark-hover.png"
-import flattenButton from "../assets/icons/flatten.png"
-import flattenButtonHover from "../assets/icons/flatten-hover.png"
-import pdfButton from "../assets/icons/pdf.png"
-import pdfButtonHover from "../assets/icons/pdf-hover.png"
-import coverButton from "../assets/icons/cover.png"
-import coverButtonHover from "../assets/icons/cover-hover.png"
-import renameButton from "../assets/icons/rename.png"
-import renameButtonHover from "../assets/icons/rename-hover.png"
-import vttButton from "../assets/icons/vtt.png"
-import vttButtonHover from "../assets/icons/vtt-hover.png"
-import mp3Button from "../assets/icons/mp3.png"
-import mp3ButtonHover from "../assets/icons/mp3-hover.png"
-import "../styles/titlebar.less"
+import React, {useState} from "react"
+import {useThemeSelector, useThemeActions} from "../store"
+import CircleIcon from "../assets/svg/circle.svg"
+import CircleCloseIcon from "../assets/svg/circle-close.svg"
+import CircleMinimizeIcon from "../assets/svg/circle-minimize.svg"
+import CircleMaximizeIcon from "../assets/svg/circle-maximize.svg"
+import CloseIcon from "../assets/svg/close.svg"
+import MinimizeIcon from "../assets/svg/minimize.svg"
+import MaximizeIcon from "../assets/svg/maximize.svg"
+import Icon from "../assets/svg/icon.svg"
+import MP3Icon from "../assets/svg/mp3.svg"
+import VTTIcon from "../assets/svg/vtt.svg"
+import RenameIcon from "../assets/svg/rename.svg"
+import CoverIcon from "../assets/svg/cover.svg"
+import PDFIcon from "../assets/svg/pdf.svg"
+import FlattenIcon from "../assets/svg/flatten.svg"
+import LightIcon from "../assets/svg/light.svg"
+import DarkIcon from "../assets/svg/dark.svg"
+import WindowsIcon from "../assets/svg/windows.svg"
+import MacIcon from "../assets/svg/mac.svg"
+import "./styles/titlebar.less"
 
 const TitleBar: React.FunctionComponent = (props) => {
-    const [hover, setHover] = useState(false)
-    const [hoverClose, setHoverClose] = useState(false)
-    const [hoverMin, setHoverMin] = useState(false)
-    const [hoverMax, setHoverMax] = useState(false)
-    const [hoverReload, setHoverReload] = useState(false)
-    const [hoverStar, setHoverStar] = useState(false)
-    const [hoverTheme, setHoverTheme] = useState(false)
-    const [hoverFlatten, setHoverFlatten] = useState(false)
-    const [hoverPDF, setHoverPDF] = useState(false)
-    const [hoverCover, setHoverCover] = useState(false)
-    const [hoverRename, setHoverRename] = useState(false)
-    const [hoverVTT, setHoverVTT] = useState(false)
-    const [hoverMP3, setHoverMP3] = useState(false)
-    const [theme, setTheme] = useState("light")
+    const {theme, os} = useThemeSelector()
+    const {setTheme, setOS} = useThemeActions()
+    const [iconHover, setIconHover] = useState(false)
 
-    useEffect(() => {
-        ipcRenderer.invoke("check-for-updates", true)
-        const initTheme = async () => {
-            const saved = await ipcRenderer.invoke("get-theme")
-            changeTheme(saved)
-        }
-        initTheme()
-    }, [])
-
-    const minimize = () => {
-        getCurrentWindow().minimize()
-    }
-
-    const maximize = () => {
-        const window = getCurrentWindow()
-        if (window.isMaximized()) {
-            window.unmaximize()
-        } else {
-            window.maximize()
-        }
+    const onMouseDown = () => {
+        window.ipcRenderer.send("moveWindow")
     }
 
     const close = () => {
-        getCurrentWindow().close()
+        window.ipcRenderer.invoke("close")
     }
 
-    const star = () => {
-        shell.openExternal(pack.repository.url)
+    const minimize = async () => {
+        await window.ipcRenderer.invoke("minimize")
+        setIconHover(false)
     }
 
-    const update = () => {
-        ipcRenderer.invoke("check-for-updates", false)
-    }
-
-    const flatten = async () => {
-        const directory = await ipcRenderer.invoke("flatten-directory")
-        if (directory) ipcRenderer.invoke("flatten", directory)
-    }
-    
-    const pdf = async () => {
-        const files = await ipcRenderer.invoke("multi-open")
-        if (files?.[0]) ipcRenderer.invoke("pdf", files)
-    }
-
-    const cover = async () => {
-        const files = await ipcRenderer.invoke("multi-open", "cover")
-        if (files?.[0]) ipcRenderer.invoke("pdf-cover", files)
-    }
-
-    const rename = async () => {
-        const files = await ipcRenderer.invoke("multi-open", "rename")
-        if (files?.[0]) ipcRenderer.invoke("rename", files)
-    }
-
-    const vtt = async () => {
-        const files = await ipcRenderer.invoke("multi-open", "subs")
-        //if (files?.[0]) ipcRenderer.invoke("remove-duplicate-subs", files)
-        if (files?.[0]) ipcRenderer.invoke("extract-subtitles", files)
+    const maximize = () => {
+        window.ipcRenderer.invoke("maximize")
     }
 
     const mp3 = async () => {
-        const files = await ipcRenderer.invoke("multi-open", "songcover")
-        if (files?.[0]) ipcRenderer.invoke("song-cover", files)
+        const files = await window.ipcRenderer.invoke("multi-open", "songcover")
+        if (files?.[0]) window.ipcRenderer.invoke("song-cover", files)
     }
 
-    const changeTheme = (value?: string) => {
-        let condition = value !== undefined ? value === "dark" : theme === "light"
-        if (condition) {
-            document.documentElement.style.setProperty("--bg-color", "#090409")
-            document.documentElement.style.setProperty("--title-color", "#090409")
-            document.documentElement.style.setProperty("--text-color", "#f33b37")
-            document.documentElement.style.setProperty("--version-color", "#090409")
-            document.documentElement.style.setProperty("--version-text", "#ff3a5b")
-            document.documentElement.style.setProperty("--version-accept", "#090409")
-            document.documentElement.style.setProperty("--version-accept-text", "#ff426b")
-            document.documentElement.style.setProperty("--version-reject", "#090409")
-            document.documentElement.style.setProperty("--version-reject-text", "#be3b57")
-            setTheme("dark")
-            ipcRenderer.invoke("save-theme", "dark")
-            ipcRenderer.invoke("update-color", "dark")
-        } else {
-            document.documentElement.style.setProperty("--bg-color", "#e14952")
-            document.documentElement.style.setProperty("--title-color", "#f33b37")
-            document.documentElement.style.setProperty("--text-color", "black")
-            document.documentElement.style.setProperty("--version-color", "#ff3a5b")
-            document.documentElement.style.setProperty("--version-text", "black")
-            document.documentElement.style.setProperty("--version-accept", "#ff426b")
-            document.documentElement.style.setProperty("--version-accept-text", "black")
-            document.documentElement.style.setProperty("--version-reject", "#be3b57")
-            document.documentElement.style.setProperty("--version-reject-text", "black")
-            setTheme("light")
-            ipcRenderer.invoke("save-theme", "light")
-            ipcRenderer.invoke("update-color", "light")
-        }
+    const vtt = async () => {
+        const files = await window.ipcRenderer.invoke("multi-open", "subs")
+        if (files?.[0]) window.ipcRenderer.invoke("extract-subtitles", files)
+    }
+
+    const rename = async () => {
+        const files = await window.ipcRenderer.invoke("multi-open", "rename")
+        if (files?.[0]) window.ipcRenderer.invoke("rename", files)
+    }
+
+    const cover = async () => {
+        const files = await window.ipcRenderer.invoke("multi-open", "cover")
+        if (files?.[0]) window.ipcRenderer.invoke("pdf-cover", files)
+    }
+    
+    const pdf = async () => {
+        const files = await window.ipcRenderer.invoke("multi-open")
+        if (files?.[0]) window.ipcRenderer.invoke("pdf", files)
+    }
+
+    const flatten = async () => {
+        const directory = await window.ipcRenderer.invoke("flatten-directory")
+        if (directory) window.ipcRenderer.invoke("flatten", directory)
+    }
+
+    const switchTheme = () => {
+        setTheme(theme === "light" ? "dark" : "light")
+    }
+
+    const switchOSStyle = () => {
+        setOS(os === "mac" ? "windows" : "mac")
+    }
+
+    const macTitleBar = () => {
+        return (
+            <div className="title-group-container">
+                <div className="title-mac-container" onMouseEnter={() => setIconHover(true)} onMouseLeave={() => setIconHover(false)}>
+                    {iconHover ? <>
+                    <CircleCloseIcon className="title-mac-button" color="var(--closeButton)" onClick={close}/>
+                    <CircleMinimizeIcon className="title-mac-button" color="var(--minimizeButton)" onClick={minimize}/>
+                    <CircleMaximizeIcon className="title-mac-button" color="var(--maximizeButton)" onClick={maximize}/>
+                    </> : <>
+                    <CircleIcon className="title-mac-button" color="var(--closeButton)" onClick={close}/>
+                    <CircleIcon className="title-mac-button" color="var(--minimizeButton)" onClick={minimize}/>
+                    <CircleIcon className="title-mac-button" color="var(--maximizeButton)" onClick={maximize}/>
+                    </>}
+                </div>
+                <div className="title-container">
+                    <Icon className="app-icon"/>
+                    <span className="title">Pixel Compressor</span>
+                </div>
+                <div className="title-button-container">
+                    <MP3Icon className="title-bar-button" onClick={mp3}/>
+                    <VTTIcon className="title-bar-button" onClick={vtt}/>
+                    <RenameIcon className="title-bar-button" onClick={rename}/>
+                    <CoverIcon className="title-bar-button" onClick={cover}/>
+                    <PDFIcon className="title-bar-button" onClick={pdf}/>
+                    <FlattenIcon className="title-bar-button" onClick={flatten}/>
+                    {theme === "light" ?
+                    <LightIcon className="title-bar-button" onClick={switchTheme}/> :
+                    <DarkIcon className="title-bar-button" onClick={switchTheme}/>}
+                    <MacIcon className="title-bar-button" onClick={switchOSStyle}/>
+                </div>
+            </div>
+        )
+    }
+
+    const windowsTitleBar = () => {
+        return (
+            <>
+            <div className="title-group-container">
+                <div className="title-container">
+                    <Icon className="app-icon"/>
+                    <span className="title">Pixel Compressor</span>
+                </div>
+                <div className="title-button-container">
+                    <MP3Icon className="title-bar-button" onClick={mp3}/>
+                    <VTTIcon className="title-bar-button" onClick={vtt}/>
+                    <RenameIcon className="title-bar-button" onClick={rename}/>
+                    <CoverIcon className="title-bar-button" onClick={cover}/>
+                    <PDFIcon className="title-bar-button" onClick={pdf}/>
+                    <FlattenIcon className="title-bar-button" onClick={flatten}/>
+                    {theme === "light" ?
+                    <LightIcon className="title-bar-button" onClick={switchTheme}/> :
+                    <DarkIcon className="title-bar-button" onClick={switchTheme}/>}
+                    <WindowsIcon className="title-bar-button" onClick={switchOSStyle}/>
+                </div>
+            </div>
+            <div className="title-group-container">
+                <div className="title-win-container">
+                    <MinimizeIcon className="title-win-button" color="var(--minimizeButton)" onClick={minimize}/>
+                    <MaximizeIcon className="title-win-button" color="var(--maximizeButton)" onClick={maximize} style={{marginLeft: "4px"}}/>
+                    <CloseIcon className="title-win-button" color="var(--closeButton)" onClick={close}/>
+                </div>
+            </div>
+            </>
+        )
     }
 
     return (
-        <section className="title-bar">
+        <section className="title-bar" onMouseDown={onMouseDown}>
                 <div className="title-bar-drag-area">
-                    <div className="title-container">
-                        <img className="app-icon" height="22" width="22" src={appIcon}/>
-                        <p><span className="title">Image Compressor v{pack.version}</span></p>
-                    </div>
-                    <div className="title-bar-buttons">
-                    <img src={hoverTheme ? (theme === "light" ? darkButtonHover : lightButtonHover) : (theme === "light" ? darkButton : lightButton)} height="20" width="20" className="title-bar-button theme-button" onClick={() => changeTheme()} onMouseEnter={() => setHoverTheme(true)} onMouseLeave={() => setHoverTheme(false)}/>
-                        <img src={hoverMP3 ? mp3ButtonHover : mp3Button} height="20" width="20" className="title-bar-button mkv-button" onClick={mp3} onMouseEnter={() => setHoverMP3(true)} onMouseLeave={() => setHoverMP3(false)}/>
-                        <img src={hoverVTT ? vttButtonHover : vttButton} height="20" width="20" className="title-bar-button mkv-button" onClick={vtt} onMouseEnter={() => setHoverVTT(true)} onMouseLeave={() => setHoverVTT(false)}/>
-                        <img src={hoverRename ? renameButtonHover : renameButton} height="20" width="20" className="title-bar-button rename-button" onClick={rename} onMouseEnter={() => setHoverRename(true)} onMouseLeave={() => setHoverRename(false)}/>
-                        <img src={hoverCover ? coverButtonHover : coverButton} height="20" width="20" className="title-bar-button cover-button" onClick={cover} onMouseEnter={() => setHoverCover(true)} onMouseLeave={() => setHoverCover(false)}/>
-                        <img src={hoverPDF ? pdfButtonHover : pdfButton} height="20" width="20" className="title-bar-button pdf-button" onClick={pdf} onMouseEnter={() => setHoverPDF(true)} onMouseLeave={() => setHoverPDF(false)}/>
-                        <img src={hoverFlatten ? flattenButtonHover : flattenButton} height="20" width="20" className="title-bar-button flatten-button" onClick={flatten} onMouseEnter={() => setHoverFlatten(true)} onMouseLeave={() => setHoverFlatten(false)}/>
-                        <img src={hoverStar ? starButtonHover : starButton} height="20" width="20" className="title-bar-button star-button" onClick={star} onMouseEnter={() => setHoverStar(true)} onMouseLeave={() => setHoverStar(false)}/>
-                        <img src={hoverReload ? updateButtonHover : updateButton} height="20" width="20" className="title-bar-button update-button" onClick={update} onMouseEnter={() => setHoverReload(true)} onMouseLeave={() => setHoverReload(false)}/>
-                        <img src={hoverMin ? minimizeButtonHover : minimizeButton} height="20" width="20" className="title-bar-button" onClick={minimize} onMouseEnter={() => setHoverMin(true)} onMouseLeave={() => setHoverMin(false)}/>
-                        <img src={hoverMax ? maximizeButtonHover : maximizeButton} height="20" width="20" className="title-bar-button" onClick={maximize} onMouseEnter={() => setHoverMax(true)} onMouseLeave={() => setHoverMax(false)}/>
-                        <img src={hoverClose ? closeButtonHover : closeButton} height="20" width="20" className="title-bar-button" onClick={close} onMouseEnter={() => setHoverClose(true)} onMouseLeave={() => setHoverClose(false)}/>
-                    </div>
+                    {os === "mac" ? macTitleBar() : windowsTitleBar()}
                 </div>
         </section>
     )

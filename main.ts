@@ -1,14 +1,13 @@
 import {app, BrowserWindow, dialog, globalShortcut, ipcMain, shell} from "electron"
 import Store from "electron-store"
-import {autoUpdater} from "electron-updater"
+import dragAddon from "electron-click-drag-plugin"
 import * as localShortcut from "electron-shortcuts"
 import fs from "fs"
 import imageSize from "image-size"
 import path from "path"
 import process from "process"
-import "./dev-app-update.yml"
-import pack from "./package.json"
 import functions from "./structures/functions"
+import mainFunctions from "./structures/mainFunctions"
 import imagemin from "imagemin"
 import imageminMozjpeg from "imagemin-mozjpeg"
 import imageminGifsicle from "imagemin-gifsicle"
@@ -21,26 +20,48 @@ import sharp from "sharp"
 // @ts-ignore
 import Helvetica from "pdfkit/js/data/Helvetica.afm"
 import PDFDocument from "@react-pdf/pdfkit"
-import child_process from "child_process"
 import mkvExtractor from "mkv-subtitle-extractor"
 import srt2vtt from "srt-to-vtt"
 import {ID3Writer} from "browser-id3-writer"
 import dumpPDFImages from "./pdf-images"
 
-import util from "util"
-
-const exec = util.promisify(child_process.exec)
-
-require("@electron/remote/main").initialize()
 process.setMaxListeners(0)
 let window: Electron.BrowserWindow | null
 let preview: Electron.BrowserWindow | null
-autoUpdater.autoDownload = false
 const store = new Store()
 
 const history: Array<{id: number, source: string, dest?: string}> = []
 const active: Array<{id: number, source: string, dest: string, action: null | "stop"}> = []
 const queue: Array<{started: boolean, info: any}> = []
+
+ipcMain.handle("close", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    win?.close()
+})
+
+ipcMain.handle("minimize", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    win?.minimize()
+})
+
+ipcMain.handle("maximize", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) return
+
+    if (win.isMaximized()) {
+      win.unmaximize()
+    } else {
+      win.maximize()
+    }
+})
+
+ipcMain.on("moveWindow", (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender)
+  const handle = win?.getNativeWindowHandle()
+  if (!handle) return
+  const windowID = process.platform === "linux" ? handle.readUInt32LE(0) : handle
+  dragAddon.startDrag(windowID)
+})
 
 ipcMain.handle("song-cover", async (event, files: string[]) => {
   const MP3s = files.filter((f) => path.extname(f) === ".mp3")
@@ -513,9 +534,10 @@ ipcMain.handle("zoom-in", () => {
 
 const openPreview = async () => {
   if (!preview) {
-    preview = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, backgroundColor: "#181818", center: false, webPreferences: {nodeIntegration: true, contextIsolation: false}})
-    await preview.loadFile(path.join(__dirname, "preview.html"))
-    require("@electron/remote/main").enable(preview.webContents)
+    preview = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
+      backgroundColor: "#181818", center: false, webPreferences: {
+      preload: path.join(__dirname, "../preload/index.js")}})
+    await preview.loadFile(path.join(__dirname, "../renderer/preview.html"))
     preview?.on("closed", () => {
       preview = null
     })
@@ -540,10 +562,11 @@ ipcMain.handle("on-drop", async (event, files: any) => {
 
 const getDimensions = (path: string) => {
   try {
-    const dimensions = imageSize(path)
-    return {width: dimensions.width ?? 0, height: dimensions.height ?? 0}
+    const dimensions = imageSize(fs.readFileSync(path))
+    const size = fs.statSync(path).size
+    return {width: dimensions.width ?? 0, height: dimensions.height ?? 0, size}
   } catch {
-    return {width: 0, height: 0}
+    return {width: 0, height: 0, size: 0}
   }
 }
 
@@ -685,14 +708,14 @@ const compress = async (info: any) => {
   }
   const {width, height} = functions.parseNewDimensions(info.width, info.height, options.resizeWidth, options.resizeHeight, options.percentage, options.keepRatio)
   if (!fs.existsSync(info.dest)) fs.mkdirSync(info.dest, {recursive: true})
-  let dest = await functions.parseDest(info.source, info.dest, options.rename, options.format, width, height, options.overwrite)
+  let dest = await mainFunctions.parseDest(info.source, info.dest, options.rename, options.format, width, height, options.overwrite)
   const historyIndex = history.findIndex((h) => h.id === info.id)
   if (historyIndex !== -1) history[historyIndex].dest = dest
   const activeIndex = active.findIndex((a) => a.id === info.id)
   if (activeIndex !== -1) active[activeIndex].dest = dest
   let meta = []
   let output = ""
-  let buffer = fs.readFileSync(info.source)
+  let buffer = fs.readFileSync(info.source) as Buffer | Uint8Array
   try {
     let inMime = "image/jpeg"
     if (path.extname(info.source) === ".png") inMime = "image/png"
@@ -816,8 +839,8 @@ ipcMain.handle("compress-realtime", async (event, info: any) => {
     return {buffer: info.source, fileSize}
   }
   const {width, height} = functions.parseNewDimensions(info.width, info.height, options.resizeWidth, options.resizeHeight, options.percentage, options.keepRatio)
-  const dest = await functions.parseDest(info.source, info.dest, "{name}", options.format, width, height, options.overwrite)
-  let buffer = fs.readFileSync(info.source)
+  const dest = await mainFunctions.parseDest(info.source, info.dest, "{name}", options.format, width, height, options.overwrite)
+  let buffer = fs.readFileSync(info.source) as Buffer | Uint8Array
   try {
     const sourceExt = path.extname(info.source).replaceAll(".", "")
     const ext = path.extname(dest).replaceAll(".", "")
@@ -935,27 +958,12 @@ ipcMain.handle("save-theme", (event, theme: string) => {
   store.set("theme", theme)
 })
 
-ipcMain.handle("install-update", async (event) => {
-  if (process.platform === "darwin") {
-    const update = await autoUpdater.checkForUpdates()
-    const url = `${pack.repository.url}/releases/download/v${update.updateInfo.version}/${update.updateInfo.files[0].url}`
-    await shell.openExternal(url)
-    app.quit()
-  } else {
-    await autoUpdater.downloadUpdate()
-    autoUpdater.quitAndInstall()
-  }
+ipcMain.handle("get-os", () => {
+  return store.get("os", "mac")
 })
 
-ipcMain.handle("check-for-updates", async (event, startup: boolean) => {
-  window?.webContents.send("close-all-dialogs", "version")
-  const update = await autoUpdater.checkForUpdates()
-  const newVersion = update.updateInfo.version
-  if (pack.version === newVersion) {
-    if (!startup) window?.webContents.send("show-version-dialog", null)
-  } else {
-    window?.webContents.send("show-version-dialog", newVersion)
-  }
+ipcMain.handle("save-os", (event, os: string) => {
+  store.set("os", os)
 })
 
 ipcMain.handle("open-location", async (event, location: string) => {
@@ -1047,11 +1055,13 @@ if (!singleLock) {
   })
 
   app.on("ready", () => {
-    window = new BrowserWindow({roundedCorners: false, width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, backgroundColor: "#e14952", center: true, webPreferences: {nodeIntegration: true, contextIsolation: false}})
-    window.loadFile(path.join(__dirname, "index.html"))
+    window = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
+      backgroundColor: "#e14952", center: true, webPreferences: {
+        preload: path.join(__dirname, "../preload/index.js")}})
+    window.loadFile(path.join(__dirname, "../renderer/index.html"))
     window.removeMenu()
-    require("@electron/remote/main").enable(window.webContents)
     if (process.platform === "darwin") {
+      /*
       if (process.env.DEVELOPMENT === "true") {
         fs.chmodSync(path.join(__dirname, "../vendor/mac/cjpeg"), "777")
         fs.chmodSync(path.join(__dirname, "../vendor/mac/cwebp"), "777")
@@ -1062,7 +1072,7 @@ if (!singleLock) {
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cwebp"), "777")
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/gifsicle"), "777")
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/pngquant"), "777")
-      }
+      }*/
     }
     window.on("close", () => {
       preview?.close()

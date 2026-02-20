@@ -1,20 +1,73 @@
 @import "~rc-slider/assets/index.css";
-@import "assets/fonts/fira-sans.less";
-@import "assets/fonts/maven-pro.less";
-@import "assets/fonts/skranji.less";
-@import "assets/fonts/yusei-magic.less";
+
+@font-face {
+    font-family: "GenEi M Gothic v2";
+    src: url("assets/fonts/GenEiMGothic2-Medium.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Honoka Shin Antique-Kaku";
+    src: url("assets/fonts/Honoka-Shin-Antique-Kaku_M.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Tsunagi Gothic Black";
+    src: url("assets/fonts/TsunagiGothic.ttf") format("truetype");
+}
+
+@title-bar-height: 30px;
 
 :root {
-    --selection-color: #ffb5cb;
-    --bg-color: #e14952;
-    --title-color: #f33b37;
-    --text-color: black;
-    --version-color: #ff3a5b;
-    --version-text: black;
-    --version-accept: #ff426b;
-    --version-accept-text: black;
-    --version-reject: #be3b57;
-    --version-reject-text: black;
+    --selectionColor: #ffb5cb;
+	--background: #ffd5e2;
+	--navColor: #ffa4c7;
+	--iconColor: #ff579d;
+	--textColor: #000000;
+	--maximizeButton: #ff6bd0;
+	--minimizeButton: #ff2ec0;
+	--closeButton: #ff2e93;
+	--textboxColor: #ffaaca;
+	--barColor: #ffffff;
+	--clearAllButton: #ff75b8;
+	--startAllButton: #ff81b3;
+	--duplicatesButton: #ff71b6;
+	--itemBG: #ff95bf;
+	--itemStroke: #ffadcf;
+	--finishedColor: #80ffdd;
+	--arrowColor: #ff478b;
+	--checkboxColor: #e82382;
+	--stopButton: #ff68a5;
+	--locationButton: #ff65b5;
+	--trashButton: #ff49aa;
+	--reductionColor: #ffffff;
+	--textColor2: #000000;
+	--titleColor: #f94788;
+}
+
+.dark {
+	--background: #271017;
+	--navColor: #7c2552;
+	--iconColor: #ff579d;
+	--textColor: #ffffff;
+	--maximizeButton: #ff6bd0;
+	--minimizeButton: #ff2ec0;
+	--closeButton: #ff2e93;
+	--textboxColor: #742651;
+	--barColor: #000000;
+	--clearAllButton: #b34c75;
+	--startAllButton: #b34c75;
+	--duplicatesButton: #b93167;
+	--itemBG: #712c48;
+	--itemStroke: #64233e;
+	--finishedColor: #63fdd4;
+	--arrowColor: #ff478b;
+	--checkboxColor: #e82382;
+	--stopButton: #ac3f6a;
+	--locationButton: #ff65b5;
+	--trashButton: #ff49aa;
+	--reductionColor: #ff63a6;
+	--textColor2: #000000;
+	--titleColor: #f97daa;
 }
 
 * {
@@ -26,7 +79,7 @@
 }
 
 html, body {
-    background-color: var(--bg-color);
+    background-color: var(--background);
     overflow-x: hidden;
     overflow-y: hidden;
     height: 100%;
@@ -64,7 +117,7 @@ p {
 }
 
 ::selection {
-    background-color: var(--selection-color);
+    background-color: var(--selectionColor);
     color: white;
 }
 

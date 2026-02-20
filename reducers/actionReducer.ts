@@ -1,0 +1,33 @@
+import {createSlice} from "@reduxjs/toolkit"
+import {useSelector, useDispatch} from "react-redux"
+import type {StoreState, StoreDispatch} from "../store"
+
+const actionSlice = createSlice({
+    name: "action",
+    initialState: {
+        clearAll: false
+    },
+    reducers: {
+        setClearAll: (state, action) => {state.clearAll = action.payload}
+    }    
+})
+
+const {
+    setClearAll
+} = actionSlice.actions
+
+export const useActionSelector = () => {
+    const selector = useSelector.withTypes<StoreState>()
+    return {
+        clearAll: selector((state) => state.action.clearAll)
+    }
+}
+
+export const useActionActions = () => {
+    const dispatch = useDispatch.withTypes<StoreDispatch>()()
+    return {
+        setClearAll: (state: boolean) => dispatch(setClearAll(state))
+    }
+}
+
+export default actionSlice.reducer
