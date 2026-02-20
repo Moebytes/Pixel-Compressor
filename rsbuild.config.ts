@@ -88,8 +88,23 @@ export default defineConfig({
                 pluginNodePolyfill(),
                 pluginTypeCheck({enable: typecheck}),
                 rendererPlugin({
-                    source: {entry: {index: path.resolve(__dirname, "./App.tsx")}},
-                    html: {template: path.resolve(__dirname, "./index.html")},
+                    source: {
+                        entry: {
+                            index: path.resolve(__dirname, "./App.tsx"),
+                            preview: path.resolve(__dirname, "./preview.tsx")
+                        }
+                    },
+                    html: {
+                        // @ts-ignore
+                        index: {
+                            template: path.resolve(__dirname, "./index.html"),
+                            filename: "index.html",
+                        },
+                        preview: {
+                            template: path.resolve(__dirname, "./preview.html"),
+                            filename: "preview.html",
+                        },
+                    },
                     output: {
                         target: "web",
                         assetPrefix: "auto",
