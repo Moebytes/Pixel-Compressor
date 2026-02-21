@@ -1,14 +1,16 @@
 import React, {useState} from "react"
-import minimizeButton from "../assets/icons/previewMinimize.png"
-import maximizeButton from "../assets/icons/previewMaximize.png"
-import closeButton from "../assets/icons/previewClose.png"
-import minimizeButtonHover from "../assets/icons/previewMinimize-hover.png"
-import maximizeButtonHover from "../assets/icons/previewMaximize-hover.png"
-import closeButtonHover from "../assets/icons/previewClose-hover.png"
-import zoomInButton from "../assets/icons/zoomIn.png"
-import zoomInButtonHover from "../assets/icons/zoomIn-hover.png"
-import zoomOutButton from "../assets/icons/zoomOut.png"
-import zoomOutButtonHover from "../assets/icons/zoomOut-hover.png"
+import {useThemeSelector, useThemeActions} from "../store"
+import CircleIcon from "../assets/svg/circle.svg"
+import CircleCloseIcon from "../assets/svg/circle-close.svg"
+import CircleMinimizeIcon from "../assets/svg/circle-minimize.svg"
+import CircleMaximizeIcon from "../assets/svg/circle-maximize.svg"
+import CloseIcon from "../assets/svg/close.svg"
+import MinimizeIcon from "../assets/svg/minimize.svg"
+import MaximizeIcon from "../assets/svg/maximize.svg"
+import ZoomInIcon from "../assets/svg/zoom-in.svg"
+import ZoomOutIcon from "../assets/svg/zoom-out.svg"
+import WindowsIcon from "../assets/svg/windows.svg"
+import MacIcon from "../assets/svg/mac.svg"
 import "./styles/previewtitlebar.less"
 
 interface PreviewTitleBarProps {
@@ -16,11 +18,8 @@ interface PreviewTitleBarProps {
 }
 
 const PreviewTitleBar: React.FunctionComponent<PreviewTitleBarProps> = (props: PreviewTitleBarProps) => {
-    let [hoverClose, setHoverClose] = useState(false)
-    let [hoverMin, setHoverMin] = useState(false)
-    let [hoverMax, setHoverMax] = useState(false)
-    let [hoverIn, setHoverIn] = useState(false)
-    let [hoverOut, setHoverOut] = useState(false)
+    const {os} = useThemeSelector()
+    const {setOS} = useThemeActions()
     const [iconHover, setIconHover] = useState(false)
 
     const onMouseDown = () => {
@@ -48,19 +47,58 @@ const PreviewTitleBar: React.FunctionComponent<PreviewTitleBarProps> = (props: P
         window.ipcRenderer.invoke("zoom-in")
     }
 
+    const switchOSStyle = () => {
+        setOS(os === "mac" ? "windows" : "mac")
+    }
+
+    const macTitleBar = () => {
+        return (
+            <div className="title-group-container">
+                <div className="title-mac-container" onMouseEnter={() => setIconHover(true)} onMouseLeave={() => setIconHover(false)}>
+                    {iconHover ? <>
+                    <CircleCloseIcon className="title-mac-button" color="var(--macCloseButton)" onClick={close}/>
+                    <CircleMinimizeIcon className="title-mac-button" color="var(--macMinimizeButton)" onClick={minimize}/>
+                    <CircleMaximizeIcon className="title-mac-button" color="var(--macMaximizeButton)" onClick={maximize}/>
+                    </> : <>
+                    <CircleIcon className="title-mac-button" color="var(--macCloseButton)" onClick={close}/>
+                    <CircleIcon className="title-mac-button" color="var(--macMinimizeButton)" onClick={minimize}/>
+                    <CircleIcon className="title-mac-button" color="var(--macMaximizeButton)" onClick={maximize}/>
+                    </>}
+                </div>
+                <div className="title-button-container">
+                    <ZoomOutIcon className="title-bar-button" onClick={zoomOut}/>
+                    <ZoomInIcon className="title-bar-button" onClick={zoomIn}/>
+                    <MacIcon className="title-bar-button" onClick={switchOSStyle}/>
+                </div>
+            </div>
+        )
+    }
+
+    const windowsTitleBar = () => {
+        return (
+            <>
+            <div className="title-group-container">
+                <div className="title-button-container">
+                    <ZoomOutIcon className="title-bar-button" onClick={zoomOut}/>
+                    <ZoomInIcon className="title-bar-button" onClick={zoomIn}/>
+                    <WindowsIcon className="title-bar-button" onClick={switchOSStyle}/>
+                </div>
+            </div>
+            <div className="title-group-container">
+                <div className="title-win-container">
+                    <MinimizeIcon className="title-win-button" color="var(--minimizeButton)" onClick={minimize}/>
+                    <MaximizeIcon className="title-win-button" color="var(--maximizeButton)" onClick={maximize} style={{marginLeft: "4px"}}/>
+                    <CloseIcon className="title-win-button" color="var(--closeButton)" onClick={close}/>
+                </div>
+            </div>
+            </>
+        )
+    }
+
     return (
-        <section className="title-bar">
+        <section className="title-bar" onMouseDown={onMouseDown}>
                 <div className="title-bar-drag-area">
-                    <div className="title-container">
-                        <img height="20" width="20" src={hoverOut ? zoomOutButtonHover : zoomOutButton} className="title-bar-button" onClick={zoomOut} onMouseEnter={() => setHoverOut(true)} onMouseLeave={() => setHoverOut(false)}/>
-                        <img height="20" width="20" src={hoverIn ? zoomInButtonHover : zoomInButton} className="title-bar-button" onClick={zoomIn} onMouseEnter={() => setHoverIn(true)} onMouseLeave={() => setHoverIn(false)}/>
-                    </div>
-                    <div className="title">{props.title}</div>
-                    <div className="title-bar-buttons">
-                        <img src={hoverMin ? minimizeButtonHover : minimizeButton} height="20" width="20" className="title-bar-button" onClick={minimize} onMouseEnter={() => setHoverMin(true)} onMouseLeave={() => setHoverMin(false)}/>
-                        <img src={hoverMax ? maximizeButtonHover : maximizeButton} height="20" width="20" className="title-bar-button" onClick={maximize} onMouseEnter={() => setHoverMax(true)} onMouseLeave={() => setHoverMax(false)}/>
-                        <img src={hoverClose ? closeButtonHover : closeButton} height="20" width="20" className="title-bar-button" onClick={close} onMouseEnter={() => setHoverClose(true)} onMouseLeave={() => setHoverClose(false)}/>
-                    </div>
+                    {os === "mac" ? macTitleBar() : windowsTitleBar()}
                 </div>
         </section>
     )

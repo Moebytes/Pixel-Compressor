@@ -2,17 +2,10 @@ import path from "path"
 import React, { useEffect, useRef, useState, useReducer} from "react"
 import {ProgressBar} from "react-bootstrap"
 import pSBC from "shade-blend-color"
-import arrow from "../assets/icons/arrow.png"
-import closeContainerHover from "../assets/icons/closeContainer-hover.png"
-import closeContainer from "../assets/icons/closeContainer.png"
-import locationButtonHover from "../assets/icons/location-hover.png"
-import locationButton from "../assets/icons/location.png"
-import startButtonHover from "../assets/icons/start-hover.png"
-import startButton from "../assets/icons/start.png"
-import stopButtonHover from "../assets/icons/stop-hover.png"
-import stopButton from "../assets/icons/stop.png"
-import trashButtonHover from "../assets/icons/trash-hover.png"
-import trashButton from "../assets/icons/trash.png"
+import RightArrowIcon from "../assets/svg/right-arrow.svg"
+import CloseContainerIcon from "../assets/svg/close-container.svg"
+import LocationIcon from "../assets/svg/location.svg"
+import TrashIcon from "../assets/svg/trash.svg"
 import {useCompressSelector} from "../store"
 import functions from "../structures/functions"
 import "./styles/filecontainer.less"
@@ -302,12 +295,12 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
                     </div>
                     <div className="file-info">
                             <p className="file-text" onMouseDown={(event) => event.stopPropagation()}>{props.fileSize}</p>
-                            <img className="file-arrow" width="25" height="25" src={arrow} onMouseDown={(event) => event.stopPropagation()}/>
+                            <RightArrowIcon className="file-arrow"/>
                             <p className="file-text" onMouseDown={(event) => event.stopPropagation()}>{newFileSize}</p>
                     </div>
                     <div className="file-info">
                             <p className="file-text" onMouseDown={(event) => event.stopPropagation()}>{props.width}x{props.height}</p>
-                            <img className="file-arrow" width="25" height="25" src={arrow} onMouseDown={(event) => event.stopPropagation()}/>
+                            <RightArrowIcon className="file-arrow"/>
                             <p className="file-text" onMouseDown={(event) => event.stopPropagation()}>{newDimension}</p>
                     </div>
                 </div>
@@ -316,13 +309,15 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
                 </div>
             </div>
             <div className="file-buttons">
-                {hover ? <img className="file-button close-container" width="28" height="28" onMouseDown={(event) => event.stopPropagation()} src={hoverClose ? closeContainerHover : closeContainer} onClick={closeConversion} onMouseEnter={() => setHoverClose(true)} onMouseLeave={() => setHoverClose(false)}/> : null}
+                {hover ? <CloseContainerIcon className="file-button close-container" onClick={closeConversion}/> : null}
                 <div className="file-button-row">
-                    <img className="file-button start-button" width="129" height="36" onMouseDown={(event) => event.stopPropagation()} onClick={() => {started ? stopConversion() : startConversion()}} src={started ? (hoverStop ? stopButtonHover : stopButton) : (hoverStart ? startButtonHover : startButton)} onMouseEnter={() => {setHoverStart(true); setHoverStop(true)}} onMouseLeave={() => {setHoverStart(false); setHoverStop(false)}}/>
+                    <button className="file-button start-button" onClick={() => {started ? stopConversion() : startConversion()}}>
+                        {started ? "Stop" : "Start"}
+                    </button>
                 </div>
                 <div className="file-button-row">
-                    {output ? <img className="file-button" width="50" height="50" onMouseDown={(event) => event.stopPropagation()} src={hoverLocation ? locationButtonHover : locationButton} onClick={() => openLocation()} onMouseEnter={() => setHoverLocation(true)} onMouseLeave={() => setHoverLocation(false)}/> : null}
-                    {output ? <img className="file-button" width="50" height="50" onMouseDown={(event) => event.stopPropagation()} src={hoverTrash ? trashButtonHover : trashButton} onClick={deleteConversion} onMouseEnter={() => setHoverTrash(true)} onMouseLeave={() => setHoverTrash(false)}/> : null}
+                    {output ? <LocationIcon className="file-button" onClick={() => openLocation()}/> : null}
+                    {output ? <TrashIcon className="file-button" onClick={() => deleteConversion()}/> : null}
                 </div>
             </div>
             </div>

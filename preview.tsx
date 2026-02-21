@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useRef} from "react"
 import {createRoot} from "react-dom/client"
+import {Provider} from "react-redux"
+import store from "./store"
 import PreviewTitleBar from "./components/PreviewTitleBar"
 import {TransformWrapper, TransformComponent} from "react-zoom-pan-pinch"
 import {ReactCompareSlider, ReactCompareSliderHandle} from "react-compare-slider"
@@ -86,4 +88,4 @@ const App: React.FunctionComponent = () => {
 }
 
 const root = createRoot(document.getElementById("root")!)
-root.render(<App/>)
+root.render(<Provider store={store}><App/></Provider>)

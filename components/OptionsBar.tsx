@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react"
 import {Dropdown, DropdownButton} from "react-bootstrap"
-import folderButton from "../assets/icons/folder.png"
-import folderButtonHover from "../assets/icons/folder-hover.png"
+import FolderIcon from "../assets/svg/folder.svg"
 import {useCompressSelector, useCompressActions} from "../store"
 import Slider from "rc-slider"
 import functions from "../structures/functions"
@@ -123,7 +122,7 @@ const OptionsBar: React.FunctionComponent = (props) => {
             </div>
             <div className="options-bar-row">
                 <div className="download-location">
-                    <img className="download-location-img" width="25" height="25" src={folderHover ? folderButtonHover : folderButton} onMouseEnter={() => setFolderHover(true)} onMouseLeave={() => setFolderHover(false)} onClick={changeDirectory}/>
+                    <FolderIcon className="download-location-img" onClick={changeDirectory}/>
                     <p><span className="download-location-text" onDoubleClick={() => window.shell.openPath(directory)}>{directory}</span></p>
                 </div>
                 <div className="options-bar-box">
