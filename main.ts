@@ -1,7 +1,6 @@
-import {app, BrowserWindow, dialog, globalShortcut, ipcMain, shell} from "electron"
+import {app, BrowserWindow, Menu, MenuItemConstructorOptions, dialog, ipcMain, shell} from "electron"
 import Store from "electron-store"
 import dragAddon from "electron-click-drag-plugin"
-import * as localShortcut from "electron-shortcuts"
 import fs from "fs"
 import imageSize from "image-size"
 import path from "path"
@@ -24,6 +23,7 @@ import mkvExtractor from "mkv-subtitle-extractor"
 import srt2vtt from "srt-to-vtt"
 import {ID3Writer} from "browser-id3-writer"
 import dumpPDFImages from "./pdf-images"
+import pack from "./package.json"
 
 process.setMaxListeners(0)
 let window: Electron.BrowserWindow | null
@@ -1042,6 +1042,56 @@ ipcMain.handle("select-directory", async (event, dir: string) => {
   }
 })
 
+ipcMain.handle("context-menu", (event, {hasSelection}) => {
+  const template: MenuItemConstructorOptions[] = [
+    {label: "Copy", enabled: hasSelection, role: "copy"},
+    {label: "Paste", role: "paste"}
+  ]
+
+  const menu = Menu.buildFromTemplate(template)
+  const window = BrowserWindow.fromWebContents(event.sender)
+  if (window) menu.popup({window})
+})
+
+const applicationMenu = () =>  {
+  const template: MenuItemConstructorOptions[] = [
+    {role: "appMenu"},
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "Open", 
+          accelerator: "CmdOrCtrl+O",
+          click: (item, window) => {
+            const win = window as BrowserWindow
+            win.webContents.send("upload")
+          }
+        }
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+        {role: "copy"},
+        {role: "paste"}
+      ]
+    },
+    {role: "windowMenu"},
+    {
+      role: "help",
+      submenu: [
+        {role: "reload"},
+        {role: "forceReload"},
+        {role: "toggleDevTools"},
+        {type: "separator"},
+        {label: "Online Support", click: () => shell.openExternal(pack.repository.url)}
+      ]
+    }
+  ]
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+}
+
 const singleLock = app.requestSingleInstanceLock()
 
 if (!singleLock) {
@@ -1056,10 +1106,11 @@ if (!singleLock) {
 
   app.on("ready", () => {
     window = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
-      backgroundColor: "#e14952", center: true, webPreferences: {
+      show: false, backgroundColor: "#e14952", center: true, webPreferences: {
         preload: path.join(__dirname, "../preload/index.js")}})
     window.loadFile(path.join(__dirname, "../renderer/index.html"))
     window.removeMenu()
+    applicationMenu()
     if (process.platform === "darwin") {
       /*
       if (process.env.DEVELOPMENT === "true") {
@@ -1074,20 +1125,14 @@ if (!singleLock) {
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/pngquant"), "777")
       }*/
     }
+    window.webContents.on("did-finish-load", () => {
+      window?.show()
+    })
     window.on("close", () => {
       preview?.close()
     })
     window.on("closed", () => {
       window = null
     })
-    localShortcut.register("Ctrl+O", () => {
-      window?.webContents.send("upload")
-    }, window, {strict: true})
-    globalShortcut.register("Control+Shift+I", () => {
-      window?.webContents.toggleDevTools()
-      preview?.webContents.toggleDevTools()
-    })
   })
 }
-
-app.allowRendererProcessReuse = false

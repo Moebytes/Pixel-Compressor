@@ -9,6 +9,7 @@ import TitleBar from "./components/TitleBar"
 import OptionsBar from "./components/OptionsBar"
 import GroupAction from "./components/GroupAction"
 import FileContainerList from "./components/FileContainerList"
+import ContextMenu from "./components/ContextMenu"
 import LocalStorage from "./LocalStorage"
 import "./index.less"
 
@@ -23,6 +24,7 @@ const App = () => {
   return (
     <main className="app" {...getRootProps()}>
         <TitleBar/>
+        <ContextMenu/>
         <LocalStorage/>
         <LogoBar/>
         <OptionsBar/>
