@@ -63,6 +63,14 @@ ipcMain.on("moveWindow", (event) => {
   dragAddon.startDrag(windowID)
 })
 
+ipcMain.handle("shell:openPath", (event, location: string) => {
+  shell.openPath(path.normalize(location))
+})
+
+ipcMain.handle("shell:showItemInFolder", (event, location: string) => {
+  shell.showItemInFolder(path.normalize(location))
+})
+
 ipcMain.handle("song-cover", async (event, files: string[]) => {
   const MP3s = files.filter((f) => path.extname(f) === ".mp3")
   const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
@@ -488,29 +496,37 @@ const subFiles = (directory: string) => {
 
 ipcMain.handle("flatten", async (event, directory: string) => {
   const {files, directories} = subFiles(directory)
-  let conflict = false 
-  loop1:
-  for (let i = 0; i < files.length; i++) {
-    let newName = path.basename(files[i])
-    for (let j = 0; j < files.length; j++) { 
-      if (`${path.dirname(files[i])}/${path.basename(files[i])}` === `${path.dirname(files[j])}/${path.basename(files[j])}`) continue
-      let checkName = path.basename(files[j])
-      if (newName === checkName) {
-        conflict = true
-        break loop1
-      }
+
+  const nameCounts = {} as {[key: string]: number}
+  for (const file of files) {
+    const base = path.basename(file)
+    nameCounts[base] = (nameCounts[base] || 0) + 1
+  }
+
+  const used = new Set<string>()
+
+  for (const file of files) {
+    const name = path.basename(file)
+    let target = name
+
+    if (nameCounts[name] > 1 || used.has(name)) {
+      let renameIndex = 0
+      do {
+        target = `${renameIndex}_${name}`
+        renameIndex++
+      } while (used.has(target))
     }
+
+    used.add(target)
+
+    const renamePath = path.join(directory, target)
+    fs.renameSync(file, renamePath)
   }
-  let renameIndex = 0
-  for (let i = 0; i < files.length; i++) {
-    let newName = `${directory}/${path.basename(files[i])}`
-    if (conflict) newName = `${directory}/${renameIndex}_${path.basename(files[i])}`
-    fs.renameSync(files[i], newName)
-    renameIndex++
+
+  for (const dir of directories) {
+    fs.rmdirSync(dir)
   }
-  for (let i = 0; i < directories.length; i++) {
-    fs.rmdirSync(directories[i])
-  }
+
   shell.openPath(directory)
 })
 
@@ -535,7 +551,7 @@ ipcMain.handle("zoom-in", () => {
 const openPreview = async () => {
   if (!preview) {
     preview = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
-      backgroundColor: "#181818", center: false, webPreferences: {
+      show: false, transparent: true, backgroundColor: "#00000000", center: false, webPreferences: {
       preload: path.join(__dirname, "../preload/index.js")}})
     await preview.loadFile(path.join(__dirname, "../renderer/preview.html"))
     preview?.on("closed", () => {
@@ -546,6 +562,10 @@ const openPreview = async () => {
     preview.focus()
   }
 }
+
+ipcMain.handle("ready-to-show", () => {
+    preview?.show()
+})
 
 ipcMain.handle("preview-realtime", async (event, info: any) => {
   preview?.webContents.send("update-buffer-realtime", info)
@@ -951,6 +971,8 @@ ipcMain.handle("get-theme", () => {
 
 ipcMain.handle("save-theme", (event, theme: string) => {
   store.set("theme", theme)
+  const transparent = store.get("transparent", false)
+  preview?.webContents.send("update-theme", theme, transparent)
 })
 
 ipcMain.handle("get-os", () => {
@@ -967,6 +989,8 @@ ipcMain.handle("get-transparent", () => {
 
 ipcMain.handle("save-transparent", (event, transparent: boolean) => {
   store.set("transparent", transparent)
+  const theme = store.get("theme", "light")
+  preview?.webContents.send("update-theme", theme, transparent)
 })
 
 ipcMain.handle("get-pinned", () => {
@@ -976,6 +1000,7 @@ ipcMain.handle("get-pinned", () => {
 ipcMain.handle("save-pinned", (event, pinned: boolean) => {
   store.set("pinned", pinned)
   window?.setAlwaysOnTop(pinned)
+  preview?.setAlwaysOnTop(pinned)
 })
 
 ipcMain.handle("open-location", async (event, location: string, create?: boolean) => {
@@ -1125,18 +1150,17 @@ if (!singleLock) {
     window.removeMenu()
     applicationMenu()
     if (process.platform === "darwin") {
-      /*
       if (process.env.DEVELOPMENT === "true") {
-        fs.chmodSync(path.join(__dirname, "../vendor/mac/cjpeg"), "777")
-        fs.chmodSync(path.join(__dirname, "../vendor/mac/cwebp"), "777")
-        fs.chmodSync(path.join(__dirname, "../vendor/mac/gifsicle"), "777")
-        fs.chmodSync(path.join(__dirname, "../vendor/mac/pngquant"), "777")
+        fs.chmodSync(path.join(__dirname, "../../vendor/mac/cjpeg"), "777")
+        fs.chmodSync(path.join(__dirname, "../../vendor/mac/cwebp"), "777")
+        fs.chmodSync(path.join(__dirname, "../../vendor/mac/gifsicle"), "777")
+        fs.chmodSync(path.join(__dirname, "../../vendor/mac/pngquant"), "777")
       } else {
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cjpeg"), "777")
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cwebp"), "777")
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/gifsicle"), "777")
         fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/pngquant"), "777")
-      }*/
+      }
     }
     window.webContents.on("did-finish-load", () => {
       window?.show()

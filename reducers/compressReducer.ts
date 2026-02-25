@@ -6,7 +6,7 @@ const compressSlice = createSlice({
     name: "compress",
     initialState: {
         directory: "",
-        quality: 75,
+        quality: 95,
         ignoreBelow: "0KB",
         resizeWidth: "100",
         resizeHeight: "100",

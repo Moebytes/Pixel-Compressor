@@ -86,9 +86,9 @@ const PreviewTitleBar: React.FunctionComponent<PreviewTitleBarProps> = (props: P
             </div>
             <div className="title-group-container">
                 <div className="title-win-container">
-                    <MinimizeIcon className="title-win-button" color="var(--minimizeButton)" onClick={minimize}/>
-                    <MaximizeIcon className="title-win-button" color="var(--maximizeButton)" onClick={maximize} style={{marginLeft: "4px"}}/>
-                    <CloseIcon className="title-win-button" color="var(--closeButton)" onClick={close}/>
+                    <MinimizeIcon className="title-win-button" onClick={minimize}/>
+                    <MaximizeIcon className="title-win-button" onClick={maximize} style={{marginLeft: "4px"}}/>
+                    <CloseIcon className="title-win-button" onClick={close}/>
                 </div>
             </div>
             </>

@@ -6,30 +6,30 @@
   </g>
   <g id="Layer_2">
     <g id="Layer_3">
-      <react fill="currentcolor" x="507.3" y="0" width="53" height="8.7"/>
-      <react fill="currentcolor" x="593.2" y="0" width="45.1" height="8.8"/>
-      <react fill="currentcolor" x="676.2" y="0" width="47.2" height="8.8"/>
-      <react fill="currentcolor" x="760.2" y="0" width="43.3" height="8.8"/>
-      <react fill="currentcolor" x="876.3" y="63.8" width="7.7" height="38"/>
-      <react fill="currentcolor" x="876.2" y="125" width="7.8" height="50"/>
-      <react fill="currentcolor" x="760.3" y="232" width="43.1" height="9.1"/>
-      <react fill="currentcolor" x="676.3" y="231.9" width="47.1" height="9.2"/>
-      <react fill="currentcolor" x="593.3" y="231.9" width="44.9" height="9.2"/>
-      <react fill="currentcolor" x="507.4" y="232" width="52.9" height="9.1"/>
-      <react fill="currentcolor" x="424.4" y="231.9" width="48" height="9.2"/>
-      <react fill="currentcolor" x="338.3" y="231.9" width="45" height="9.2"/>
-      <react fill="currentcolor" x="272.3" y="231.9" width="33.1" height="9.2"/>
-      <react fill="currentcolor" x="214.2" y="231.9" width="31.2" height="9.2"/>
-      <react fill="currentcolor" x="138.3" y="231.9" width="56" height="9.2"/>
-      <react fill="currentcolor" x="60.3" y="231.9" width="48.9" height="9.2"/>
-      <react fill="currentcolor" x="-.6" y="125" width="9.1" height="50"/>
-      <react fill="currentcolor" x="-.6" y="64" width="9.1" height="38.3"/>
-      <react fill="currentcolor" x="60" y="-.1" width="49.4" height="9"/>
-      <react fill="currentcolor" x="138.3" y="-.1" width="56" height="9"/>
-      <react fill="currentcolor" x="213.9" y="-.1" width="31.6" height="9"/>
-      <react fill="currentcolor" x="272.2" y="0" width="33.2" height="8.8"/>
-      <react fill="currentcolor" x="338.2" y="0" width="45.3" height="8.8"/>
-      <react fill="currentcolor" x="424.3" y="0" width="48" height="8.7"/>
+      <rect fill="currentColor" x="507.3" y="0" width="53" height="8.7"/>
+      <rect fill="currentColor" x="593.2" y="0" width="45.1" height="8.8"/>
+      <rect fill="currentColor" x="676.2" y="0" width="47.2" height="8.8"/>
+      <rect fill="currentColor" x="760.2" y="0" width="43.3" height="8.8"/>
+      <rect fill="currentColor" x="876.3" y="63.8" width="7.7" height="38"/>
+      <rect fill="currentColor" x="876.2" y="125" width="7.8" height="50"/>
+      <rect fill="currentColor" x="760.3" y="232" width="43.1" height="9.1"/>
+      <rect fill="currentColor" x="676.3" y="231.9" width="47.1" height="9.2"/>
+      <rect fill="currentColor" x="593.3" y="231.9" width="44.9" height="9.2"/>
+      <rect fill="currentColor" x="507.4" y="232" width="52.9" height="9.1"/>
+      <rect fill="currentColor" x="424.4" y="231.9" width="48" height="9.2"/>
+      <rect fill="currentColor" x="338.3" y="231.9" width="45" height="9.2"/>
+      <rect fill="currentColor" x="272.3" y="231.9" width="33.1" height="9.2"/>
+      <rect fill="currentColor" x="214.2" y="231.9" width="31.2" height="9.2"/>
+      <rect fill="currentColor" x="138.3" y="231.9" width="56" height="9.2"/>
+      <rect fill="currentColor" x="60.3" y="231.9" width="48.9" height="9.2"/>
+      <rect fill="currentColor" x="-.6" y="125" width="9.1" height="50"/>
+      <rect fill="currentColor" x="-.6" y="64" width="9.1" height="38.3"/>
+      <rect fill="currentColor" x="60" y="-.1" width="49.4" height="9"/>
+      <rect fill="currentColor" x="138.3" y="-.1" width="56" height="9"/>
+      <rect fill="currentColor" x="213.9" y="-.1" width="31.6" height="9"/>
+      <rect fill="currentColor" x="272.2" y="0" width="33.2" height="8.8"/>
+      <rect fill="currentColor" x="338.2" y="0" width="45.3" height="8.8"/>
+      <rect fill="currentColor" x="424.3" y="0" width="48" height="8.7"/>
       <path fill="currentColor" d="M876.4,0h-32.2v8.8h32.2v26h7.6V6.2c0-3.4-2.7-6.1-6.1-6.1h-1.5Z" fill-rule="evenodd"/>
       <path fill="currentColor" d="M876.7,240.9h-32.2v-8.8h32.2v-29.2c0,0,7.4,0,7.4,0l.3,29.2v2.6c0,3.4-2.7,6.1-6.1,6.1h-1.6Z" fill-rule="evenodd"/>
       <path fill="currentColor" d="M7.6,0h19.7v8.8H7.9l-.2,26H0V6.3C0,2.8,2.7,0,6.1,0h1.5Z" fill-rule="evenodd"/>

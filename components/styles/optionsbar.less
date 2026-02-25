@@ -1,12 +1,20 @@
 @import "../../index.less";
 
+.options-bar-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 7px;
+    width: 100%;
+}
+
 .options-bar {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: 7px;
-    width: 100%;
+    width: 86%;
 }
 
 .options-bar-row {
@@ -23,21 +31,20 @@
     align-items: center;
     flex-direction: row;
     justify-content: space-evenly;
-    margin-right: 35px;
+    margin-right: 20px;
 }
 
 .options-bar-text {
     color: var(--textColor);
-    font-size: 23px;
+    font-size: 20px;
     font-family: "GenEi M Gothic v2", sans-serif;
-    cursor: text;
-    user-select: text;
+    white-space: nowrap;
 }
 
 .options-bar-input {
     margin-left: 6px;
     color: var(--textColor);
-    font-size: 23px;
+    font-size: 20px;
     font-family: "GenEi M Gothic v2", sans-serif;
     height: 30px;
     width: 50px;
@@ -115,82 +122,54 @@
     background-color: var(--navColor);
 }
 
-.pointer {
-}
-
-.default-button {
-    border: none;
-    font-family: "GenEi M Gothic v2", sans-serif;
-    font-size: 1.5rem;
-    color: white;
-    margin-right: 35px;
-    padding-left: 0.6rem;
-    padding-right: 0.6rem;
-    span:hover {
-        color: black;
-    }
-}
-
-.upload-button {
-    .default-button();
-    background-color: #ff3a42;
+.options-slider.rc-slider,
+.options-slider.rc-slider * {
+    cursor: default !important;
 }
 
 .options-slider.rc-slider {
-    margin-left: 15px;
-    margin-right: 15px;
-    width: 40%;
+    width: 200px;
     border-radius: 0.2;
     align-items: center;
+    margin-top: -3px;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .options-slider > .rc-slider-rail {
-    height: 0.4rem;
-    background-color: black;
+    height: 0.6rem;
+    background-color: var(--barColor);
     border-radius: 0.2;
 }
 
 .options-slider > .rc-slider-track {
-    height: 0.4rem;
-    background-color: #fa4160;
+    height: 0.6rem;
+    background-color: var(--iconColor);
     border-radius: 0.2;
+    box-shadow: none !important;
 }
 
 .options-slider > .rc-slider-handle {
+    opacity: 1 !important;
+    box-shadow: none !important;
     background-color: var(--iconColor);
     border-radius: 50%;
-    margin-top: -7px;
+    margin-top: -6px;
     border: none;
     height: 1.3rem;
     width: 1.3rem;
-    &:active {
-        box-shadow: none;
-        filter: hue-rotate(-30deg);
-    }
     &:hover {
-        filter: hue-rotate(-30deg);
+        box-shadow: none !important;
+    }
+    &:active {
+        box-shadow: none !important;
+    }
+    &:focus {
+        box-shadow: none !important;
+        outline: none !important;
     }
 }
 
-.rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
-    box-shadow: none;
-}
-
-.download-location {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-right: 35px;
-    margin-top: 8px;
-}
-
-.download-location-text {
-    color: var(--textColor);
-    user-select: text;
-    font-family: "GenEi M Gothic v2", sans-serif;
-    font-size: 18px;
-    margin-left: 5px;
-}
-
-.download-location-img {
+.options-slider .rc-slider-handle-click-focused {
+    box-shadow: none !important;
 }

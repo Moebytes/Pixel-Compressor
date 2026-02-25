@@ -1,10 +1,10 @@
 {
   "name": "pixel-compressor",
-  "version": "0.9.9",
+  "version": "1.0.0",
   "description": "An app that compresses and resizes images.",
   "main": "dist/main/index.js",
   "scripts": {
-    "start": "npm run clean && rsbuild build && electron dist/main/index.js",
+    "start": "npm run clean && rsbuild build && cross-env DEVELOPMENT=true electron dist/main/index.js",
     "build": "npm run clean ./build && rsbuild build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
     "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
     "clean": "del-cli ./dist"
@@ -202,7 +202,6 @@
     "react-bootstrap": "^2.10.10",
     "react-compare-slider": "^3.1.0",
     "react-dom": "^19.2.4",
-    "react-dropzone": "^15.0.0",
     "react-redux": "^9.2.0",
     "react-sortablejs": "^6.1.4",
     "react-zoom-pan-pinch": "^3.7.0",

@@ -50,8 +50,6 @@ Flatten - Flattens a directory, meaning that all files in all sub-directories ar
 
 Our design is available here: https://www.figma.com/design/lTUtTd5bAHSxvg3uTzNWIA/Pixel-Compressor
 
-*New design is wip
-
 ### Installation
 
 Download from [releases](https://github.com/Moebytes/Image-Compressor/releases).

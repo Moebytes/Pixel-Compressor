@@ -2,7 +2,7 @@ import React, {useEffect} from "react"
 import {useThemeSelector, useThemeActions} from "./store"
 import {Themes, OS} from "./reducers/themeReducer"
 
-const lightColorList = {
+export const lightColorList = {
 	"--background": "#ffd5e2",
 	"--navColor": "#ffa4c7",
 	"--iconColor": "#ff579d",
@@ -20,16 +20,18 @@ const lightColorList = {
 	"--itemStroke": "#ffadcf",
 	"--finishedColor": "#80ffdd",
 	"--arrowColor": "#ff478b",
-	"--checkboxColor": "#e82382",
+	"--checkboxColor": "#FF45B5",
 	"--stopButton": "#ff68a5",
 	"--locationButton": "#ff65b5",
 	"--trashButton": "#ff49aa",
 	"--reductionColor": "#ffffff",
 	"--textColor2": "#000000",
-	"--titleColor": "#f94788"
+	"--titleColor": "#f94788",
+	"--previewBG": "#ffffff",
+    "--previewBG2": "#f8f8f8"
 }
 
-const darkColorList = {
+export const darkColorList = {
 	"--background": "#271017",
 	"--navColor": "#7c2552",
 	"--iconColor": "#ff579d",
@@ -47,13 +49,15 @@ const darkColorList = {
 	"--itemStroke": "#64233e",
 	"--finishedColor": "#63fdd4",
 	"--arrowColor": "#ff478b",
-	"--checkboxColor": "#e82382",
+	"--checkboxColor": "#FF45B5",
 	"--stopButton": "#ac3f6a",
 	"--locationButton": "#ff65b5",
 	"--trashButton": "#ff49aa",
 	"--reductionColor": "#ff63a6",
 	"--textColor2": "#000000",
-	"--titleColor": "#f97daa"
+	"--titleColor": "#f97daa",
+	"--previewBG": "#131313",
+    "--previewBG2": "#181818"
 }
 
 const LocalStorage: React.FunctionComponent = () => {

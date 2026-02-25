@@ -3,6 +3,7 @@ import GifEncoder from "gif-encoder"
 import pixels from "image-pixels"
 import gifFrames from "gif-frames"
 import path from "path"
+import {lightColorList, darkColorList} from "../LocalStorage"
 
 const images = [".png", ".jpg", ".jpeg", ".webp", ".avif", ".jxl", ".tiff"]
 const gifs = [".gif"]
@@ -101,12 +102,10 @@ export default class Functions {
     }
 
     public static arrayBufferToBuffer(arrayBuffer: Buffer | ArrayBuffer) {
-        const buffer = Buffer.alloc(arrayBuffer.byteLength)
-        const array = new Uint8Array(arrayBuffer)
-        for (let i = 0; i < buffer.length; i++) {
-            buffer[i] = array[i]
+        if (Buffer.isBuffer(arrayBuffer)) {
+            return arrayBuffer
         }
-        return buffer
+        return Buffer.from(arrayBuffer)
     }
 
     public static encodeGIF = async (frames: Buffer[], delays: number[], width: number, height: number) => {
@@ -211,6 +210,22 @@ export default class Functions {
             return true
         } else {
             return false
+        }
+    }
+
+    public static updateTheme = (theme: string, transparent?: boolean) => {
+        if (typeof window === "undefined") return
+        const selectedTheme = theme === "light" ? lightColorList : darkColorList
+
+        Object.entries(selectedTheme).forEach(([key, value]) => {
+            document.documentElement.style.setProperty(key, value)
+        })
+
+        if (transparent) {
+            document.documentElement.style.setProperty("--background", "transparent")
+            document.documentElement.style.setProperty("--navColor", "transparent")
+            document.documentElement.style.setProperty("--previewBG", "transparent")
+            document.documentElement.style.setProperty("--previewBG2", "transparent")
         }
     }
 }

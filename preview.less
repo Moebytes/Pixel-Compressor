@@ -20,7 +20,13 @@
 	--macCloseButton: #ff4b59;
 	--macMinimizeButton: #ffc600;
 	--previewIcon: #000000;
-	--previewBG: #1d1d1d;
+	--previewBG: #ffffff;
+    --previewBG2: #f8f8f8;
+}
+
+.dark {
+	--previewBG: #131313;
+	--previewBG2: #181818;
 }
 
 * {
@@ -33,7 +39,7 @@
 html, body {
     width: 100%;
     height: 100%;
-    background: repeating-conic-gradient(#131313 0% 25%, #181818 0% 50%) 50% / 10px 10px
+    background: repeating-conic-gradient(var(--previewBG) 0% 25%, var(--previewBG2) 0% 50%) 50% / 10px 10px
 }
 
 #root {
@@ -57,20 +63,8 @@ html, body {
     color: white;
 }
 
-::-webkit-scrollbar {
-    width: 20px;
-}
-  
-::-webkit-scrollbar-track {
-    background: #000000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #5a5a5a;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #303030;
+*::-webkit-scrollbar {
+    display: none;
 }
 
 .preview-container {
@@ -108,23 +102,25 @@ html, body {
 .preview-text {
     margin-right: 10px;
     width: 100px;
-    color: #f55195;
-    font-size: 15px;
+    color: #ffffff;
+    font-size: 17px;
     font-family: "GenEi M Gothic v2", sans-serif;
     position: absolute;
     right: 0;
     bottom: 2%;
-    text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;
+    -webkit-text-stroke: 2px black;
+    paint-order: stroke fill;
 }
 
 .preview-text2 {
     margin-left: 10px;
     width: 100px;
-    color: #f55195;
-    font-size: 15px;
+    color: #ffffff;
+    font-size: 17px;
     font-family: "GenEi M Gothic v2", sans-serif;
     position: absolute;
     left: 0;
     bottom: 2%;
-    text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black,0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;
+    -webkit-text-stroke: 2px black;
+    paint-order: stroke fill;
 }

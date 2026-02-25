@@ -60,72 +60,76 @@ const OptionsBar: React.FunctionComponent = () => {
     }
 
     return (
-        <section className="options-bar">
-            <div className="options-bar-row">
-                <p className="options-bar-text">Quality:</p>
-                <Slider className="options-slider" onChange={(value) => setQuality(value as number)} min={1} max={100} step={1} value={quality}/>
-                <p className="options-bar-text">{quality}%</p>
-                <div className="options-bar-box">
-                    <p className="options-bar-text">Ignore Under:</p>
-                    <input className="options-bar-input wide" type="text" value={ignoreBelow} onChange={handleIgnoreBelow}/>
+        <section className="options-bar-container">
+            <div className="options-bar">
+                <div className="options-bar-row">
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Quality:</p>
+                        <Slider className="options-slider" onChange={(value) => setQuality(value as number)} min={1} max={100} step={1} value={quality}/>
+                        <p className="options-bar-text" style={{width: "50px"}}>{quality}%</p>
+                    </div>
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Ignore Under:</p>
+                        <input className="options-bar-input wide" type="text" value={ignoreBelow} onChange={handleIgnoreBelow}/>
+                    </div>
                 </div>
-            </div>
-            <div className="options-bar-row">
-                <div className="options-bar-box">
-                    {percentage ?
-                    <CheckboxCheckedIcon className="options-bar-checkbox" onClick={() => setPercentage(!percentage)}/> :
-                    <CheckboxIcon className="options-bar-checkbox" onClick={() => setPercentage(!percentage)}/>}
-                    <p className="options-bar-text pointer" onClick={() => setPercentage(!percentage)}>Percentage</p>
-                </div>
-                <div className="options-bar-box">
+                <div className="options-bar-row">
+                    <div className="options-bar-box">
+                        {percentage ?
+                        <CheckboxCheckedIcon className="options-bar-checkbox" onClick={() => setPercentage(!percentage)}/> :
+                        <CheckboxIcon className="options-bar-checkbox" onClick={() => setPercentage(!percentage)}/>}
+                        <p className="options-bar-text pointer" onClick={() => setPercentage(!percentage)}>Percentage</p>
+                    </div>
+                    <div className="options-bar-box">
+                        {keepRatio ?
+                        <CheckboxCheckedIcon className="options-bar-checkbox" onClick={() => setKeepRatio(!keepRatio)}/> :
+                        <CheckboxIcon className="options-bar-checkbox" onClick={() => setKeepRatio(!keepRatio)}/>}
+                        <p className="options-bar-text pointer" onClick={() => setKeepRatio(!keepRatio)}>Keep Ratio</p>
+                    </div>
                     {keepRatio ?
-                    <CheckboxCheckedIcon className="options-bar-checkbox" onClick={() => setKeepRatio(!keepRatio)}/> :
-                    <CheckboxIcon className="options-bar-checkbox" onClick={() => setKeepRatio(!keepRatio)}/>}
-                    <p className="options-bar-text pointer" onClick={() => setKeepRatio(!keepRatio)}>Keep Ratio</p>
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Resize:</p>
+                        <input className="options-bar-input" type="text" value={resizeWidth} onChange={handleResizeWidth}/>
+                        <p className="options-bar-text">{percentage ? "%" : "px"}</p>
+                    </div>
+                    :
+                    <>
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Width:</p>
+                        <input className="options-bar-input" type="text" value={resizeWidth} onChange={handleResizeWidth}/>
+                        <p className="options-bar-text">{percentage ? "%" : "px"}</p>
+                    </div>
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Height:</p>
+                        <input className="options-bar-input" type="text" value={resizeHeight} onChange={handleResizeHeight}/>
+                        <p className="options-bar-text">{percentage ? "%" : "px"}</p>
+                    </div>
+                    </>
+                    }
                 </div>
-                {keepRatio ?
-                <div className="options-bar-box">
-                    <p className="options-bar-text">Resize:</p>
-                    <input className="options-bar-input" type="text" value={resizeWidth} onChange={handleResizeWidth}/>
-                    <p className="options-bar-text">{percentage ? "%" : "px"}</p>
-                </div>
-                :
-                <>
-                <div className="options-bar-box">
-                    <p className="options-bar-text">Width:</p>
-                    <input className="options-bar-input" type="text" value={resizeWidth} onChange={handleResizeWidth}/>
-                    <p className="options-bar-text">{percentage ? "%" : "px"}</p>
-                </div>
-                <div className="options-bar-box">
-                    <p className="options-bar-text">Height:</p>
-                    <input className="options-bar-input" type="text" value={resizeHeight} onChange={handleResizeHeight}/>
-                    <p className="options-bar-text">{percentage ? "%" : "px"}</p>
-                </div>
-                </>
-                }
-            </div>
-            <div className="options-bar-row">
-                <div className="options-bar-box">
-                    <p className="options-bar-text">Rename:</p>
-                    <input className="options-bar-input wide" type="text" value={rename} onChange={handleRename}/>
-                </div>
-                <div className="options-bar-box">
-                    <p className="options-bar-text">Format: </p>
-                    <DropdownButton title={format} drop="down">
-                        <Dropdown.Item active={format === "original"} onClick={() => setFormat("original")}>original</Dropdown.Item>
-                        <Dropdown.Item active={format === "png"} onClick={() => setFormat("png")}>png</Dropdown.Item>
-                        <Dropdown.Item active={format === "jpg"} onClick={() => setFormat("jpg")}>jpg</Dropdown.Item>
-                        <Dropdown.Item active={format === "gif"} onClick={() => setFormat("gif")}>gif</Dropdown.Item>
-                        <Dropdown.Item active={format === "webp"} onClick={() => setFormat("webp")}>webp</Dropdown.Item>
-                        <Dropdown.Item active={format === "avif"} onClick={() => setFormat("avif")}>avif</Dropdown.Item>
-                        <Dropdown.Item active={format === "jxl"} onClick={() => setFormat("jxl")}>jxl</Dropdown.Item>
-                    </DropdownButton>
-                </div>
-                <div className="options-bar-box">
-                    {progressive ?
-                    <CheckboxCheckedIcon className="options-bar-checkbox" onClick={() => setProgressive(!progressive)}/> :
-                    <CheckboxIcon className="options-bar-checkbox" onClick={() => setProgressive(!progressive)}/>}
-                    <p className="options-bar-text pointer" onClick={() => setProgressive(!progressive)}>Progressive</p>
+                <div className="options-bar-row">
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Rename:</p>
+                        <input className="options-bar-input wide" type="text" value={rename} onChange={handleRename}/>
+                    </div>
+                    <div className="options-bar-box">
+                        <p className="options-bar-text">Format: </p>
+                        <DropdownButton title={format} drop="down">
+                            <Dropdown.Item active={format === "original"} onClick={() => setFormat("original")}>original</Dropdown.Item>
+                            <Dropdown.Item active={format === "png"} onClick={() => setFormat("png")}>png</Dropdown.Item>
+                            <Dropdown.Item active={format === "jpg"} onClick={() => setFormat("jpg")}>jpg</Dropdown.Item>
+                            <Dropdown.Item active={format === "gif"} onClick={() => setFormat("gif")}>gif</Dropdown.Item>
+                            <Dropdown.Item active={format === "webp"} onClick={() => setFormat("webp")}>webp</Dropdown.Item>
+                            <Dropdown.Item active={format === "avif"} onClick={() => setFormat("avif")}>avif</Dropdown.Item>
+                            <Dropdown.Item active={format === "jxl"} onClick={() => setFormat("jxl")}>jxl</Dropdown.Item>
+                        </DropdownButton>
+                    </div>
+                    <div className="options-bar-box">
+                        {progressive ?
+                        <CheckboxCheckedIcon className="options-bar-checkbox" onClick={() => setProgressive(!progressive)}/> :
+                        <CheckboxIcon className="options-bar-checkbox" onClick={() => setProgressive(!progressive)}/>}
+                        <p className="options-bar-text pointer" onClick={() => setProgressive(!progressive)}>Progressive</p>
+                    </div>
                 </div>
             </div>
         </section>
