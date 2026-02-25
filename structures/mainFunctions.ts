@@ -54,13 +54,20 @@ export default class MainFunctions {
             ?.replace(/{name}/gi, name)
             .replace(/{width}/gi, String(width))
             .replace(/{height}/gi, String(height))
+
         let overwrite = false
+        let sourceFlag = false
         if (dir.startsWith("{source}")) {
-            if (!rename) overwrite = true
+            sourceFlag = true
             dir = dir.replace("{source}", path.dirname(source))
         }
         if (!rename) rename = name
-        let dest = `${dir}/${rename}.${format}`
+        let dest = path.join(dir, `${rename}.${format}`)
+
+        if (path.resolve(dest) === path.resolve(source)) {
+            if (sourceFlag) overwrite = true
+        }
+
         if (!overwrite && fs.existsSync(dest)) {
             let i = 1
             while (fs.existsSync(dest)) {

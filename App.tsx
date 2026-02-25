@@ -15,10 +15,6 @@ import LocalStorage from "./LocalStorage"
 import "./index.less"
 
 const App = () => {
-  useEffect(() => {
-    window.ipcRenderer.on("debug", console.log)
-  }, [])
-
   return (
     <main className="app">
         <TitleBar/>
