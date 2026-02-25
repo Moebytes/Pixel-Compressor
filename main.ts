@@ -973,7 +973,8 @@ ipcMain.handle("get-theme", () => {
 ipcMain.handle("save-theme", (event, theme: string) => {
   store.set("theme", theme)
   const transparent = store.get("transparent", false)
-  preview?.webContents.send("update-theme", theme, transparent)
+  const os = store.get("os", "mac")
+  preview?.webContents.send("update-theme", theme, transparent, os)
 })
 
 ipcMain.handle("get-os", () => {
@@ -982,6 +983,9 @@ ipcMain.handle("get-os", () => {
 
 ipcMain.handle("save-os", (event, os: string) => {
   store.set("os", os)
+  const theme = store.get("theme", "light")
+  const transparent = store.get("transparent", false)
+  preview?.webContents.send("update-theme", theme, transparent, os)
 })
 
 ipcMain.handle("get-transparent", () => {
@@ -991,7 +995,8 @@ ipcMain.handle("get-transparent", () => {
 ipcMain.handle("save-transparent", (event, transparent: boolean) => {
   store.set("transparent", transparent)
   const theme = store.get("theme", "light")
-  preview?.webContents.send("update-theme", theme, transparent)
+  const os = store.get("os", "mac")
+  preview?.webContents.send("update-theme", theme, transparent, os)
 })
 
 ipcMain.handle("get-pinned", () => {

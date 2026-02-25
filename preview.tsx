@@ -1,14 +1,17 @@
 import React, {useState, useEffect, useRef} from "react"
+import store, {useThemeSelector, useThemeActions} from "./store"
 import {createRoot} from "react-dom/client"
 import {Provider} from "react-redux"
-import store from "./store"
 import functions from "./structures/functions"
 import PreviewTitleBar from "./components/PreviewTitleBar"
 import {TransformWrapper, TransformComponent} from "react-zoom-pan-pinch"
 import {ReactCompareSlider, ReactCompareSliderHandle} from "react-compare-slider"
+import {OS} from "./reducers/themeReducer"
 import "./preview.less"
 
 const App: React.FunctionComponent = () => {
+    const {os} = useThemeSelector()
+    const {setOS} = useThemeActions()
     const [oldImage, setOldImage] = useState("")
     const [oldFileSize, setOldFileSize] = useState("0")
     const [newImage, setNewImage] = useState("")
@@ -37,11 +40,14 @@ const App: React.FunctionComponent = () => {
         const initTheme = async () => {
             const theme = await window.ipcRenderer.invoke("get-theme")
             const transparent = await window.ipcRenderer.invoke("get-transparent")
+            const os = await window.ipcRenderer.invoke("get-os")
             functions.updateTheme(theme, transparent)
+            setOS(os)
             window.ipcRenderer.invoke("ready-to-show")
         }
-        const updateTheme = (event: any, theme: string, transparent: boolean) => {
+        const updateTheme = (event: any, theme: string, transparent: boolean, os: OS) => {
             functions.updateTheme(theme, transparent)
+            setOS(os)
         }
         initTheme()
         window.ipcRenderer.on("update-buffer", updateBuffer)
