@@ -7,7 +7,6 @@ const compressSlice = createSlice({
     initialState: {
         directory: "",
         quality: 75,
-        overwrite: true,
         ignoreBelow: "0KB",
         resizeWidth: "100",
         resizeHeight: "100",
@@ -20,7 +19,6 @@ const compressSlice = createSlice({
     reducers: {
         setDirectory: (state, action) => {state.directory = action.payload},
         setQuality: (state, action) => {state.quality = action.payload},
-        setOverwrite: (state, action) => {state.overwrite = action.payload},
         setIgnoreBelow: (state, action) => {state.ignoreBelow = action.payload},
         setResizeWidth: (state, action) => {state.resizeWidth = action.payload},
         setResizeHeight: (state, action) => {state.resizeHeight = action.payload},
@@ -33,7 +31,7 @@ const compressSlice = createSlice({
 })
 
 const {
-    setDirectory, setQuality, setOverwrite, setIgnoreBelow,
+    setDirectory, setQuality, setIgnoreBelow,
     setResizeWidth, setResizeHeight, setPercentage,
     setKeepRatio, setProgressive, setRename, setFormat
 } = compressSlice.actions
@@ -43,7 +41,6 @@ export const useCompressSelector = () => {
     return {
         directory: selector((state) => state.compress.directory),
         quality: selector((state) => state.compress.quality),
-        overwrite: selector((state) => state.compress.overwrite),
         ignoreBelow: selector((state) => state.compress.ignoreBelow),
         resizeWidth: selector((state) => state.compress.resizeWidth),
         resizeHeight: selector((state) => state.compress.resizeHeight),
@@ -60,7 +57,6 @@ export const useCompressActions = () => {
     return {
         setDirectory: (state: string) => dispatch(setDirectory(state)),
         setQuality: (state: number) => dispatch(setQuality(state)),
-        setOverwrite: (state: boolean) => dispatch(setOverwrite(state)),
         setIgnoreBelow: (state: string) => dispatch(setIgnoreBelow(state)),
         setResizeWidth: (state: string) => dispatch(setResizeWidth(state)),
         setResizeHeight: (state: string) => dispatch(setResizeHeight(state)),

@@ -1,11 +1,12 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import React from "react"
-import {useDropzone} from "react-dropzone"
 import {createRoot} from "react-dom/client"
 import {Provider} from "react-redux"
 import store from "./store"
-import LogoBar from "./components/LogoBar"
 import TitleBar from "./components/TitleBar"
+import LogoBar from "./components/LogoBar"
+import FileSelector from "./components/FileSelector"
+import DirectoryBar from "./components/DirectoryBar"
 import OptionsBar from "./components/OptionsBar"
 import GroupAction from "./components/GroupAction"
 import FileContainerList from "./components/FileContainerList"
@@ -14,19 +15,14 @@ import LocalStorage from "./LocalStorage"
 import "./index.less"
 
 const App = () => {
-  const onDrop = (files: any) => {
-    files = files.map((f: any) => f.path)
-    window.ipcRenderer.invoke("on-drop", files)
-  }
-
-  const {getRootProps} = useDropzone({onDrop})
-
   return (
-    <main className="app" {...getRootProps()}>
+    <main className="app">
         <TitleBar/>
         <ContextMenu/>
         <LocalStorage/>
         <LogoBar/>
+        <FileSelector/>
+        <DirectoryBar/>
         <OptionsBar/>
         <GroupAction/>
         <FileContainerList/>

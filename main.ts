@@ -556,10 +556,6 @@ ipcMain.handle("preview", async (event, info: any) => {
   preview?.webContents.send("update-buffer", info)
 })
 
-ipcMain.handle("on-drop", async (event, files: any) => {
-  window?.webContents.send("on-drop", files)
-})
-
 const getDimensions = (path: string) => {
   try {
     const dimensions = imageSize(fs.readFileSync(path))
@@ -689,7 +685,6 @@ const compress = async (info: any) => {
   if (qIndex !== -1) queue[qIndex].started = true
   const options = {
     quality: Number(info.quality),
-    overwrite: info.overwrite,
     ignoreBelow: info.ignoreBelow,
     resizeWidth: Number(info.resizeWidth),
     resizeHeight: Number(info.resizeHeight),
@@ -708,7 +703,7 @@ const compress = async (info: any) => {
   }
   const {width, height} = functions.parseNewDimensions(info.width, info.height, options.resizeWidth, options.resizeHeight, options.percentage, options.keepRatio)
   if (!fs.existsSync(info.dest)) fs.mkdirSync(info.dest, {recursive: true})
-  let dest = await mainFunctions.parseDest(info.source, info.dest, options.rename, options.format, width, height, options.overwrite)
+  let {dest, overwrite} = await mainFunctions.parseDest(info.source, info.dest, options.rename, options.format, width, height)
   const historyIndex = history.findIndex((h) => h.id === info.id)
   if (historyIndex !== -1) history[historyIndex].dest = dest
   const activeIndex = active.findIndex((a) => a.id === info.id)
@@ -783,8 +778,8 @@ const compress = async (info: any) => {
         }
       }
     }
-    fs.writeFileSync(options.overwrite ? info.source : dest, buffer)
-    if (options.overwrite) {
+    fs.writeFileSync(overwrite ? info.source : dest, buffer)
+    if (overwrite) {
       fs.renameSync(info.source, dest)
     }
     output = dest
@@ -823,7 +818,6 @@ ipcMain.handle("compress", async (event, info: any, startAll: boolean) => {
 ipcMain.handle("compress-realtime", async (event, info: any) => {
   const options = {
     quality: Number(info.quality),
-    overwrite: info.overwrite,
     ignoreBelow: info.ignoreBelow,
     resizeWidth: Number(info.resizeWidth),
     resizeHeight: Number(info.resizeHeight),
@@ -839,12 +833,13 @@ ipcMain.handle("compress-realtime", async (event, info: any) => {
     return {buffer: info.source, fileSize}
   }
   const {width, height} = functions.parseNewDimensions(info.width, info.height, options.resizeWidth, options.resizeHeight, options.percentage, options.keepRatio)
-  const dest = await mainFunctions.parseDest(info.source, info.dest, "{name}", options.format, width, height, options.overwrite)
+  const {dest} = await mainFunctions.parseDest(info.source, info.dest, "{name}", options.format, width, height)
   let buffer = fs.readFileSync(info.source) as Buffer | Uint8Array
   try {
     const sourceExt = path.extname(info.source).replaceAll(".", "")
     const ext = path.extname(dest).replaceAll(".", "")
-    const resizeCondition = options.keepRatio ? (options.percentage ? options.resizeWidth !== 100 : true) : (options.percentage ? (options.resizeWidth !== 100 && options.resizeHeight !== 100) : true)
+    const resizeCondition = options.keepRatio ? (options.percentage ? options.resizeWidth !== 100 : true) : 
+      (options.percentage ? (options.resizeWidth !== 100 && options.resizeHeight !== 100) : true)
     let isAnimated = sourceExt === "gif"
     if (sourceExt === "webp") {
       isAnimated = functions.isAnimatedWebp(buffer)
@@ -966,7 +961,25 @@ ipcMain.handle("save-os", (event, os: string) => {
   store.set("os", os)
 })
 
-ipcMain.handle("open-location", async (event, location: string) => {
+ipcMain.handle("get-transparent", () => {
+  return store.get("transparent", false)
+})
+
+ipcMain.handle("save-transparent", (event, transparent: boolean) => {
+  store.set("transparent", transparent)
+})
+
+ipcMain.handle("get-pinned", () => {
+  return store.get("pinned", false)
+})
+
+ipcMain.handle("save-pinned", (event, pinned: boolean) => {
+  store.set("pinned", pinned)
+  window?.setAlwaysOnTop(pinned)
+})
+
+ipcMain.handle("open-location", async (event, location: string, create?: boolean) => {
+  if (create && !fs.existsSync(location)) fs.mkdirSync(location, {recursive: true})
   if (!fs.existsSync(location)) return
   if (fs.statSync(location).isDirectory()) {
     shell.openPath(path.normalize(location))
@@ -1106,7 +1119,7 @@ if (!singleLock) {
 
   app.on("ready", () => {
     window = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
-      show: false, backgroundColor: "#e14952", center: true, webPreferences: {
+      transparent: true, show: false, backgroundColor: "#00000000", center: true, webPreferences: {
         preload: path.join(__dirname, "../preload/index.js")}})
     window.loadFile(path.join(__dirname, "../renderer/index.html"))
     window.removeMenu()

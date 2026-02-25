@@ -16,9 +16,13 @@
 }
 
 @title-bar-height: 30px;
+@selector-width: 80%;
 
 :root {
     --selectionColor: #ffb5cb;
+    --hoverColor: #ffffff;
+    --dropdownHover: #ff6aaf;
+	--titleActive: #ff37af;
 	--background: #ffd5e2;
 	--navColor: #ffa4c7;
 	--iconColor: #ff579d;
@@ -26,6 +30,7 @@
 	--maximizeButton: #ff6bd0;
 	--minimizeButton: #ff2ec0;
 	--closeButton: #ff2e93;
+	--selectorColor: #ffa4c7;
 	--textboxColor: #ffaaca;
 	--barColor: #ffffff;
 	--clearAllButton: #ff75b8;
@@ -52,6 +57,7 @@
 	--maximizeButton: #ff6bd0;
 	--minimizeButton: #ff2ec0;
 	--closeButton: #ff2e93;
+	--selectorColor: #7c2552;
 	--textboxColor: #742651;
 	--barColor: #000000;
 	--clearAllButton: #b34c75;
@@ -121,20 +127,8 @@ p {
     color: white;
 }
 
-::-webkit-scrollbar {
-    width: 20px;
-}
-  
-::-webkit-scrollbar-track {
-    background: #000000;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #5a5a5a;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #303030;
+*::-webkit-scrollbar {
+    display: none;
 }
 
 input[type="search"]::-webkit-search-decoration,
@@ -160,30 +154,16 @@ img {
     image-rendering: -webkit-optimize-contrast;
 }
 
-ul {
-    list-style-type: none;
+ul, li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-input[type="checkbox"] {
-    appearance: none;
-    border: none;
-    height: 13px;
-    width: 13px;
-    font-size: 16px; 
-    position: relative;
-    background: white;
-    border-radius: 2px;
-    &:checked::before {
-        content: '\2713'; 
-        background: #ff3370;
-        width: 100%; 
-        height: 100%; 
-        top: 0;
-        left: 0;
-        display: flex; 
-        align-items: center; 
-        justify-content: center; 
-        color: white; 
-        font-weight: bold;
-    }
+button {
+	border: none;
+	outline: none;
+	&:hover {
+		cursor: default;
+	}
 }

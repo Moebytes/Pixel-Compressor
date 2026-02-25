@@ -14,6 +14,8 @@ import RenameIcon from "../assets/svg/rename.svg"
 import CoverIcon from "../assets/svg/cover.svg"
 import PDFIcon from "../assets/svg/pdf.svg"
 import FlattenIcon from "../assets/svg/flatten.svg"
+import TransparentIcon from "../assets/svg/transparent.svg"
+import PinIcon from "../assets/svg/pin.svg"
 import LightIcon from "../assets/svg/light.svg"
 import DarkIcon from "../assets/svg/dark.svg"
 import WindowsIcon from "../assets/svg/windows.svg"
@@ -21,8 +23,8 @@ import MacIcon from "../assets/svg/mac.svg"
 import "./styles/titlebar.less"
 
 const TitleBar: React.FunctionComponent = (props) => {
-    const {theme, os} = useThemeSelector()
-    const {setTheme, setOS} = useThemeActions()
+    const {theme, os, transparent, pinned} = useThemeSelector()
+    const {setTheme, setOS, setTransparent, setPinned} = useThemeActions()
     const [iconHover, setIconHover] = useState(false)
 
     const onMouseDown = () => {
@@ -80,6 +82,14 @@ const TitleBar: React.FunctionComponent = (props) => {
         setOS(os === "mac" ? "windows" : "mac")
     }
 
+    const switchTransparency = () => {
+        setTransparent(!transparent)
+    }
+
+    const switchPinned = () => {
+        setPinned(!pinned)
+    }
+
     const macTitleBar = () => {
         return (
             <div className="title-group-container">
@@ -105,6 +115,8 @@ const TitleBar: React.FunctionComponent = (props) => {
                     <CoverIcon className="title-bar-button" onClick={cover}/>
                     <PDFIcon className="title-bar-button" onClick={pdf}/>
                     <FlattenIcon className="title-bar-button" onClick={flatten}/>
+                    <TransparentIcon className="title-bar-button" onClick={switchTransparency}/>
+                    <PinIcon className={`title-bar-button ${pinned && "title-button-active"}`} onClick={switchPinned}/>
                     {theme === "light" ?
                     <LightIcon className="title-bar-button" onClick={switchTheme}/> :
                     <DarkIcon className="title-bar-button" onClick={switchTheme}/>}
@@ -129,6 +141,8 @@ const TitleBar: React.FunctionComponent = (props) => {
                     <CoverIcon className="title-bar-button" onClick={cover}/>
                     <PDFIcon className="title-bar-button" onClick={pdf}/>
                     <FlattenIcon className="title-bar-button" onClick={flatten}/>
+                    <TransparentIcon className="title-bar-button" onClick={switchTransparency}/>
+                    <PinIcon className={`title-bar-button ${pinned && "title-button-active"}`} onClick={switchPinned}/>
                     {theme === "light" ?
                     <LightIcon className="title-bar-button" onClick={switchTheme}/> :
                     <DarkIcon className="title-bar-button" onClick={switchTheme}/>}

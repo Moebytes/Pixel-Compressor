@@ -21,7 +21,7 @@ interface FileContainerProps {
 }
 
 const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileContainerProps) => {
-    const {quality, overwrite, ignoreBelow, resizeWidth, resizeHeight,
+    const {quality, ignoreBelow, resizeWidth, resizeHeight,
         percentage, keepRatio, rename, format, progressive, directory
     } = useCompressSelector()
     const [hover, setHover] = useState(false)
@@ -108,7 +108,7 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
     const updateRealtime = async () => {
         if (output) return
         const {buffer, fileSize} = await window.ipcRenderer.invoke("compress-realtime", {id: props.id, source: props.source, dest: directory, 
-        fileSize: props.fileSize, width: props.width, height: props.height, quality, overwrite, ignoreBelow, resizeWidth, resizeHeight, 
+        fileSize: props.fileSize, width: props.width, height: props.height, quality, ignoreBelow, resizeWidth, resizeHeight, 
         percentage, keepRatio, rename, format, progressive})
         setNewBuffer(buffer)
         setNewFileSize(functions.readableFileSize(fileSize))
@@ -129,7 +129,7 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
         window.webFrame.clearCache()
         await functions.timeout(props.id)
         window.ipcRenderer.invoke("compress", {id: props.id, source: props.source, dest: directory, fileSize: props.fileSize, width: props.width, 
-        height: props.height, quality, overwrite, ignoreBelow, resizeWidth, resizeHeight, percentage, keepRatio, rename, format, progressive}, startAll)
+        height: props.height, quality, ignoreBelow, resizeWidth, resizeHeight, percentage, keepRatio, rename, format, progressive}, startAll)
         if (!startAll) {
             setStarted(true)
             props.setStart(props.id)

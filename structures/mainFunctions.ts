@@ -27,7 +27,7 @@ export default class MainFunctions {
         return newDest
     }
 
-    public static parseDest = async (source: string, dir: string, rename: string, format: string, width: number, height: number, overwrite: boolean) => {
+    public static parseDest = async (source: string, dir: string, rename: string, format: string, width: number, height: number) => {
         const sourceDir = path.dirname(source)
         const name = path.basename(source, path.extname(source))
         if (format === "original") format = path.extname(source).replaceAll(".", "")
@@ -38,24 +38,29 @@ export default class MainFunctions {
                 const results = await sagiri(source, {mask: [5]})
                 const englishTitle = await MainFunctions.translateTitle(results[0].raw.data.title)
                 rename = rename
-                ?.replace(/{title}/gi, results[0].raw.data.title ?? "")
-                .replace(/{englishTitle}/gi, englishTitle)
-                .replace(/{id}/gi, results[0].raw.data.pixiv_id ?? "")
-                .replace(/{artist}/gi, results[0].raw.data.member_name ?? "")
+                    ?.replace(/{title}/gi, results[0].raw.data.title ?? "")
+                    .replace(/{englishTitle}/gi, englishTitle)
+                    .replace(/{id}/gi, results[0].raw.data.pixiv_id ?? "")
+                    .replace(/{artist}/gi, results[0].raw.data.member_name ?? "")
             } catch {
                 rename = rename
-                ?.replace(/{title}/gi, "")
-                .replace(/{englishTitle}/gi, "")
-                .replace(/{id}/gi, "")
-                .replace(/{artist}/gi, "")
+                    ?.replace(/{title}/gi, "")
+                    .replace(/{englishTitle}/gi, "")
+                    .replace(/{id}/gi, "")
+                    .replace(/{artist}/gi, "")
             }
         }
         rename = rename
-        ?.replace(/{name}/gi, name)
-        .replace(/{width}/gi, String(width))
-        .replace(/{height}/gi, String(height))
+            ?.replace(/{name}/gi, name)
+            .replace(/{width}/gi, String(width))
+            .replace(/{height}/gi, String(height))
+        let overwrite = false
+        if (dir.startsWith("{source}")) {
+            if (!rename) overwrite = true
+            dir = dir.replace("{source}", path.dirname(source))
+        }
         if (!rename) rename = name
-        let dest = `${overwrite ? sourceDir : dir}/${rename}.${format}`
+        let dest = `${dir}/${rename}.${format}`
         if (!overwrite && fs.existsSync(dest)) {
             let i = 1
             while (fs.existsSync(dest)) {
@@ -63,7 +68,7 @@ export default class MainFunctions {
                 i++
             }
         }
-        return dest
+        return {dest, overwrite}
     }
 
     public static removeDirectory = (dir: string) => {

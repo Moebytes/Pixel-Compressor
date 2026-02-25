@@ -49,6 +49,10 @@ export default class Functions {
         return `${Number((bytes / Math.pow(1024, i)).toFixed(2))} ${["B", "KB", "MB", "GB", "TB"][i]}`
     }
 
+    public static escape = (str: string) => {
+        return path.normalize(str).replace(/(?<!\\)\\(?!\\)/g, "/")
+    }
+
     public static parseFileSize = (size: string) => {
         if (!size) return 0
         const num = parseFloat(size)

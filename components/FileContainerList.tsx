@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import Reorder from "react-reorder"
+import {ReactSortable} from "react-sortablejs"
 import {useActionActions} from "../store"
 import functions from "../structures/functions"
 import FileContainer from "./FileContainer"
@@ -83,13 +83,15 @@ const FileContainerList: React.FunctionComponent = (props) => {
     }
 
     return (
-        <Reorder reorderId="file-containers" component="ul" holdTime={50} onReorder={reorder}>{
-            containers.map((c) => (
+        <ReactSortable tag="ul" list={containers} setList={setContainers} animation={150}
+            ghostClass="list-ghost" chosenClass="list-chosen" dragClass="list-drag"
+            forceFallback={true} fallbackOnBody={true}>
+            {containers.map((c) => (
                 <li key={c.id}>
                     {c.jsx}
                 </li>
-            ))
-        }</Reorder>
+            ))}
+        </ReactSortable>
     )
 }
 

@@ -1,0 +1,36 @@
+@import "../../index.less";
+@import "./fileselector.less";
+
+.directory-bar {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.directory-bar-center {
+    display: flex;
+    align-items: center;
+    width: @selector-width;
+}
+
+.directory-bar-img {
+    margin-right: 10px;
+    width: auto;
+    height: 30px;
+    color: var(--iconColor);
+}
+
+.directory-bar-box {
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 1px 4px;
+    width: 100%;
+    color: var(--textColor2);
+    background-color: var(--textboxColor);
+    user-select: text;
+    font-family: "GenEi M Gothic v2", sans-serif;
+    font-size: 18px;
+    margin-left: 5px;
+}
