@@ -722,8 +722,9 @@ const compress = async (info: any) => {
     return nextQueue(info)
   }
   const {width, height} = functions.parseNewDimensions(info.width, info.height, options.resizeWidth, options.resizeHeight, options.percentage, options.keepRatio)
-  if (!fs.existsSync(info.dest)) fs.mkdirSync(info.dest, {recursive: true})
+  
   let {dest, overwrite} = await mainFunctions.parseDest(info.source, info.dest, options.rename, options.format, width, height)
+  if (!fs.existsSync(path.dirname(dest))) fs.mkdirSync(path.dirname(dest), {recursive: true})
   const historyIndex = history.findIndex((h) => h.id === info.id)
   if (historyIndex !== -1) history[historyIndex].dest = dest
   const activeIndex = active.findIndex((a) => a.id === info.id)
@@ -813,6 +814,7 @@ const compress = async (info: any) => {
     return nextQueue(info)
   } catch (error) {
     console.log(error)
+    window?.webContents?.send("debug", error)
     window?.webContents.send("conversion-finished", {id: info.id, output: info.source, skipped: true})
     return nextQueue(info)
   }

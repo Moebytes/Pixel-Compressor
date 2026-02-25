@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import React from "react"
+import React, { useEffect } from "react"
 import {createRoot} from "react-dom/client"
 import {Provider} from "react-redux"
 import store from "./store"
@@ -15,6 +15,10 @@ import LocalStorage from "./LocalStorage"
 import "./index.less"
 
 const App = () => {
+  useEffect(() => {
+    window.ipcRenderer.on("debug", console.log)
+  }, [])
+
   return (
     <main className="app">
         <TitleBar/>
