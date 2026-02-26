@@ -469,7 +469,7 @@ ipcMain.handle("multi-open", async (event, type?: string) => {
   }
   if (!window) return
   const result = await dialog.showOpenDialog(window, {
-    properties: ["openFile", "openDirectory", "multiSelections"],
+    properties: ["openFile", "multiSelections"],
     buttonLabel: button,
     title
   })
@@ -1055,7 +1055,7 @@ ipcMain.handle("select-files", async () => {
       {name: "Images", extensions: ["png", "jpg", "jpeg", "webp", "avif", "tiff"]},
       {name: "GIF", extensions: ["gif"]}
     ],
-    properties: ["multiSelections", "openFile", "openDirectory"]
+    properties: ["multiSelections", "openFile"]
   })
   const filePaths = files.filePaths
   if (filePaths.length === 1) {
