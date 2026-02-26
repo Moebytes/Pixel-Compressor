@@ -51,6 +51,9 @@ jobs:
       - name: Rebuild native modules
         run: npm run rebuild
 
+      - name: Install patches
+        run: npm run patch
+
       - name: Build app
         run: npm run build
 

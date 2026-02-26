@@ -1162,11 +1162,6 @@ if (!singleLock) {
         fs.chmodSync(path.join(__dirname, "../../vendor/mac/cwebp"), "777")
         fs.chmodSync(path.join(__dirname, "../../vendor/mac/gifsicle"), "777")
         fs.chmodSync(path.join(__dirname, "../../vendor/mac/pngquant"), "777")
-      } else {
-        fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cjpeg"), "777")
-        fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/cwebp"), "777")
-        fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/gifsicle"), "777")
-        fs.chmodSync(path.join(app.getAppPath(), "../app/vendor/pngquant"), "777")
       }
     }
     window.webContents.on("did-finish-load", () => {

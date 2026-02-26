@@ -7,6 +7,7 @@
     "start": "npm run clean && rsbuild build && cross-env DEVELOPMENT=true electron dist/main/index.js",
     "build": "npm run clean ./build && rsbuild build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
     "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
+    "patch": "node patch.ts",
     "clean": "del-cli ./dist"
   },
   "overrides": {
@@ -37,25 +38,7 @@
         "target": "dmg",
         "arch": "arm64"
       },
-      "category": "public.app-category.utilities",
-      "extraResources": [
-        {
-          "from": "vendor/mac/cjpeg",
-          "to": "app/vendor/cjpeg"
-        },
-        {
-          "from": "vendor/mac/cwebp",
-          "to": "app/vendor/cwebp"
-        },
-        {
-          "from": "vendor/mac/gifsicle",
-          "to": "app/vendor/gifsicle"
-        },
-        {
-          "from": "vendor/mac/pngquant",
-          "to": "app/vendor/pngquant"
-        }
-      ]
+      "category": "public.app-category.utilities"
     },
     "dmg": {
       "title": "${productName}",
@@ -69,25 +52,7 @@
       "target": {
         "target": "nsis",
         "arch": "x64"
-      },
-      "extraResources": [
-        {
-          "from": "vendor/windows/cjpeg.exe",
-          "to": "app/vendor/cjpeg.exe"
-        },
-        {
-          "from": "vendor/windows/cwebp.exe",
-          "to": "app/vendor/cwebp.exe"
-        },
-        {
-          "from": "vendor/windows/gifsicle.exe",
-          "to": "app/vendor/gifsicle.exe"
-        },
-        {
-          "from": "vendor/windows/pngquant.exe",
-          "to": "app/vendor/pngquant.exe"
-        }
-      ]
+      }
     },
     "nsis": {
       "oneClick": false,
@@ -104,25 +69,7 @@
         "arch": "x64"
       },
       "category": "Utility",
-      "icon": "./assets/icon.png",
-      "extraResources": [
-        {
-          "from": "vendor/linux/cjpeg",
-          "to": "app/vendor/cjpeg"
-        },
-        {
-          "from": "vendor/linux/cwebp",
-          "to": "app/vendor/cwebp"
-        },
-        {
-          "from": "vendor/linux/gifsicle",
-          "to": "app/vendor/gifsicle"
-        },
-        {
-          "from": "vendor/linux/pngquant",
-          "to": "app/vendor/pngquant"
-        }
-      ]
+      "icon": "./assets/icon.png"
     },
     "files": [
       "dist/**/*",
