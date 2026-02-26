@@ -1,4 +1,5 @@
 import {app, BrowserWindow, Menu, MenuItemConstructorOptions, dialog, ipcMain, shell} from "electron"
+import localShortcut from "electron-localshortcut"
 import Store from "electron-store"
 import dragAddon from "electron-click-drag-plugin"
 import fs from "fs"
@@ -550,8 +551,8 @@ ipcMain.handle("zoom-in", () => {
 
 const openPreview = async () => {
   if (!preview) {
-    preview = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
-      show: false, transparent: true, backgroundColor: "#00000000", center: false, webPreferences: {
+    preview = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, hasShadow: false, resizable: true,
+      show: false, transparent: process.platform !== "win32", backgroundColor: "#00000000", center: false, webPreferences: {
       preload: path.join(__dirname, "../preload/index.js")}})
     await preview.loadFile(path.join(__dirname, "../renderer/preview.html"))
     preview?.on("closed", () => {
@@ -980,7 +981,7 @@ ipcMain.handle("save-theme", (event, theme: string) => {
 })
 
 ipcMain.handle("get-os", () => {
-  return store.get("os", "mac")
+  return store.get("os", process.platform === "darwin" ? "mac" : "windows")
 })
 
 ipcMain.handle("save-os", (event, os: string) => {
@@ -1153,8 +1154,8 @@ if (!singleLock) {
   })
 
   app.on("ready", () => {
-    window = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, 
-      transparent: true, show: false, backgroundColor: "#00000000", center: true, webPreferences: {
+    window = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, resizable: true, hasShadow: false,
+      transparent: process.platform !== "win32", show: false, backgroundColor: "#00000000", center: true, webPreferences: {
         preload: path.join(__dirname, "../preload/index.js")}})
     window.loadFile(path.join(__dirname, "../renderer/index.html"))
     window.removeMenu()
@@ -1167,6 +1168,10 @@ if (!singleLock) {
         fs.chmodSync(path.join(__dirname, "../../vendor/mac/pngquant"), "777")
       }
     }
+    localShortcut.register(window, "Control+Shift+I", () => {
+      window?.webContents.openDevTools()
+      preview?.webContents.openDevTools()
+    })
     window.webContents.on("did-finish-load", () => {
       window?.show()
     })
