@@ -814,6 +814,7 @@ const compress = async (info: any) => {
     return nextQueue(info)
   } catch (error) {
     console.log(error)
+    window?.webContents.send("debug", error)
     window?.webContents.send("conversion-finished", {id: info.id, output: info.source, skipped: true})
     return nextQueue(info)
   }
