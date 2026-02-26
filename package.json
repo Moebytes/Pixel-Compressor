@@ -189,7 +189,7 @@
     "gif-frames": "github:Moestash/gif-frames#no-cumulative",
     "image-pixels": "^2.2.2",
     "image-size": "^2.0.2",
-    "imagemin": "^9.0.1",
+    "imagemin": "^8.0.1",
     "imagemin-gifsicle": "^7.0.0",
     "imagemin-mozjpeg": "^9.0.0",
     "imagemin-pngquant": "^9.0.2",
