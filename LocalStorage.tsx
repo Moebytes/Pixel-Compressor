@@ -85,7 +85,14 @@ const LocalStorage: React.FunctionComponent = () => {
             const savedTheme = await window.ipcRenderer.invoke("get-theme")
             if (savedTheme) setTheme(savedTheme as Themes)
         }
+        const updateTheme = (event: any, theme: string, transparent: boolean, os: OS) => {
+            setOS(os)
+        }
         initTheme()
+        window.ipcRenderer.on("update-theme", updateTheme)
+        return () => {
+            window.ipcRenderer.removeListener("update-theme", updateTheme)
+        }
     }, [])
 
     useEffect(() => {
@@ -100,10 +107,6 @@ const LocalStorage: React.FunctionComponent = () => {
         }
         initOS()
     }, [])
-
-    useEffect(() => {
-        window.ipcRenderer.invoke("save-os", os)
-    }, [os])
 
 	useEffect(() => {
         const initTransparent = async () => {

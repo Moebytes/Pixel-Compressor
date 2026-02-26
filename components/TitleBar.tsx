@@ -80,6 +80,7 @@ const TitleBar: React.FunctionComponent = (props) => {
 
     const switchOSStyle = () => {
         setOS(os === "mac" ? "windows" : "mac")
+        window.ipcRenderer.invoke("save-os", os === "mac" ? "windows" : "mac")
     }
 
     const switchTransparency = () => {

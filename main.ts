@@ -976,6 +976,7 @@ ipcMain.handle("save-theme", (event, theme: string) => {
   const transparent = store.get("transparent", false)
   const os = store.get("os", "mac")
   preview?.webContents.send("update-theme", theme, transparent, os)
+  window?.webContents.send("update-theme", theme, transparent, os)
 })
 
 ipcMain.handle("get-os", () => {
@@ -987,6 +988,7 @@ ipcMain.handle("save-os", (event, os: string) => {
   const theme = store.get("theme", "light")
   const transparent = store.get("transparent", false)
   preview?.webContents.send("update-theme", theme, transparent, os)
+  window?.webContents.send("update-theme", theme, transparent, os)
 })
 
 ipcMain.handle("get-transparent", () => {
@@ -998,6 +1000,7 @@ ipcMain.handle("save-transparent", (event, transparent: boolean) => {
   const theme = store.get("theme", "light")
   const os = store.get("os", "mac")
   preview?.webContents.send("update-theme", theme, transparent, os)
+  window?.webContents.send("update-theme", theme, transparent, os)
 })
 
 ipcMain.handle("get-pinned", () => {
