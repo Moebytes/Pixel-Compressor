@@ -30,6 +30,7 @@ process.setMaxListeners(0)
 let window: Electron.BrowserWindow | null
 let preview: Electron.BrowserWindow | null
 const store = new Store()
+let initialTransparent = process.platform === "win32" ? store.get("transparent", false) as boolean : true
 
 const history: Array<{id: number, source: string, dest?: string}> = []
 const active: Array<{id: number, source: string, dest: string, action: null | "stop"}> = []
@@ -552,7 +553,7 @@ ipcMain.handle("zoom-in", () => {
 const openPreview = async () => {
   if (!preview) {
     preview = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, hasShadow: false, resizable: true,
-      show: false, transparent: process.platform !== "win32", backgroundColor: "#00000000", center: false, webPreferences: {
+      show: false, transparent: initialTransparent, backgroundColor: "#00000000", center: false, webPreferences: {
       preload: path.join(__dirname, "../preload/index.js")}})
     await preview.loadFile(path.join(__dirname, "../renderer/preview.html"))
     preview?.on("closed", () => {
@@ -1155,7 +1156,7 @@ if (!singleLock) {
 
   app.on("ready", () => {
     window = new BrowserWindow({width: 800, height: 600, minWidth: 720, minHeight: 450, frame: false, resizable: true, hasShadow: false,
-      transparent: process.platform !== "win32", show: false, backgroundColor: "#00000000", center: true, webPreferences: {
+      transparent: initialTransparent, show: false, backgroundColor: "#00000000", center: true, webPreferences: {
         preload: path.join(__dirname, "../preload/index.js")}})
     window.loadFile(path.join(__dirname, "../renderer/index.html"))
     window.removeMenu()
