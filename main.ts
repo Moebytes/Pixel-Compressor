@@ -526,7 +526,11 @@ ipcMain.handle("flatten", async (event, directory: string) => {
   }
 
   for (const dir of directories) {
-    fs.rmdirSync(dir)
+    try {
+      fs.rmdirSync(dir)
+    } catch {
+      continue
+    }
   }
 
   shell.openPath(directory)
@@ -536,10 +540,55 @@ ipcMain.handle("flatten-directory", async () => {
   if (!window) return
   const result = await dialog.showOpenDialog(window, {
     properties: ["openDirectory"],
-    buttonLabel: "Flatten",
+    buttonLabel: "Flatten Directory",
     title: "Flatten Directory"
   })
   return result.filePaths[0]
+})
+
+ipcMain.handle("show-help-dialog", async (event: any, i: number) => {
+  const detail = [
+    "== Titlebar Functions ==",
+    "",
+    "MP3 - Select an image and an mp3 file to add the image as cover art.",
+    "",
+    "VTT - Select ASS or SRT subtitles to convert them to VTT.",
+    "",
+    "Rename - Select files within a directory and they are renamed with the directory name chronologically.",
+    "",
+    "Image - Select images to convert double pages to single pages (images with twice the width of others).",
+    "",
+    "PDF - Select images to convert to PDF or a PDF to extract images.",
+    "",
+    "Flatten - Flatten a directory so all files are top-level. Renames files that have name conflicts.",
+    "",
+    "== Overwriting Original ==",
+    "",
+    "Same destination as the source overwrites the original. You can do this by setting directory to {source}, rename to {name}, and format to original.",
+    "",
+    "== Delete Duplicates ==",
+    "",
+    "Add images and press this button to delete duplicate images found by a perceptual hash.",
+    "",
+    "== Name Replacements ==",
+    "",
+    "{name} - The name of the original file.",
+    "{width} - The destination width.",
+    "{height} - The destination height.",
+    "{title} - The title of the Pixiv illustration, if found.",
+    "{englishTitle} - The title but translated to English.",
+    "{id} - The ID of the Pixiv illustration, if found.",
+    "{artist} - The artist of the Pixiv illustration, if found.",
+  ].join("\n")
+
+  await dialog.showMessageBox(window!, {
+    type: "info",
+    title: "Help",
+    message: "Help",
+    detail,
+    buttons: ["Ok"],
+    noLink: true
+  })
 })
 
 ipcMain.handle("zoom-out", () => {
@@ -602,7 +651,7 @@ ipcMain.handle("delete-duplicates", async () => {
         let dupeArray = []
         let found = false
         hashMap.forEach((value, key) => {
-          if (dist(key, hash) < 5) {
+          if (dist(key, hash) < 6) {
             dupeArray = functions.removeDuplicates([...value, source])
             hashMap.set(key, dupeArray)
             found = true

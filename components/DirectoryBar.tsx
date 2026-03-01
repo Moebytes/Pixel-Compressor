@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react"
 import {useCompressSelector, useCompressActions} from "../store"
+import HelpIcon from "../assets/svg/help.svg"
 import ResetIcon from "../assets/svg/revert.svg"
 import FolderIcon from "../assets/svg/folder.svg"
 import SourceIcon from "../assets/svg/source.svg"
@@ -60,6 +61,10 @@ const DirectoryBar: React.FunctionComponent = () => {
         }
     }
 
+    const showHelp = () => {
+        window.ipcRenderer.invoke("show-help-dialog")
+    }
+
     const reset = async () => {
         setQuality(95)
         setIgnoreBelow("0KB")
@@ -75,6 +80,7 @@ const DirectoryBar: React.FunctionComponent = () => {
     return (
         <section className="directory-bar">
             <div className="directory-bar-center">
+                <HelpIcon className="directory-bar-img" onClick={showHelp}/>
                 <ResetIcon className="directory-bar-img" onClick={reset}/>
                 <SourceIcon className="directory-bar-img" onClick={sourceAction}/>
                 <FolderIcon className="directory-bar-img" onClick={changeDirectory}/>

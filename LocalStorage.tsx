@@ -28,7 +28,8 @@ export const lightColorList = {
 	"--textColor2": "#000000",
 	"--titleColor": "#f94788",
 	"--previewBG": "#ffffff",
-    "--previewBG2": "#f8f8f8"
+    "--previewBG2": "#f8f8f8",
+	"--previewIcon": "#000000"
 }
 
 export const darkColorList = {
@@ -57,7 +58,8 @@ export const darkColorList = {
 	"--textColor2": "#000000",
 	"--titleColor": "#f97daa",
 	"--previewBG": "#131313",
-    "--previewBG2": "#181818"
+    "--previewBG2": "#181818",
+	"--previewIcon": "#ffffff"
 }
 
 const LocalStorage: React.FunctionComponent = () => {
