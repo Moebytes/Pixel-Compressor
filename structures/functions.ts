@@ -1,4 +1,10 @@
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Pixel Compressor - A cute image compressor ❤              *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import GifEncoder from "gif-encoder"
 import pixels from "image-pixels"
 import gifFrames from "gif-frames"

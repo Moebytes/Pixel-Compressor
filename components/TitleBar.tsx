@@ -1,3 +1,9 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Pixel Compressor - A cute image compressor ❤              *
+ * Copyright © 2026 Moebytes <moebytes.com>                  *
+ * Licensed under CC BY-NC 4.0. See license.txt for details. *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 import React, {useState} from "react"
 import {useThemeSelector, useThemeActions} from "../store"
 import CircleIcon from "../assets/svg/circle.svg"
