@@ -37,6 +37,7 @@ let window: Electron.BrowserWindow | null
 let preview: Electron.BrowserWindow | null
 const store = new Store()
 let initialTransparent = process.platform === "win32" ? store.get("transparent", false) as boolean : true
+let windowOpacity = store.get("window-opacity", 100) as number
 
 const history: Array<{id: number, source: string, dest?: string}> = []
 const active: Array<{id: number, source: string, dest: string, action: null | "stop"}> = []
@@ -611,6 +612,7 @@ const openPreview = async () => {
       show: false, transparent: initialTransparent, backgroundColor: "#00000000", center: false, webPreferences: {
       preload: path.join(__dirname, "../preload/index.js")}})
     await preview.loadFile(path.join(__dirname, "../renderer/preview.html"))
+    preview.setOpacity(windowOpacity / 100)
     preview?.on("closed", () => {
       preview = null
     })
@@ -1147,10 +1149,33 @@ ipcMain.handle("select-directory", async (event, dir: string) => {
   }
 })
 
+const setWindowOpacity = (percent: number) => {
+  windowOpacity = Math.max(10, Math.min(100, percent))
+  store.set("window-opacity", windowOpacity)
+
+  window?.setOpacity(windowOpacity / 100)
+  preview?.setOpacity(windowOpacity / 100)
+
+  applicationMenu()
+}
+
+const opacitySubmenu = (): MenuItemConstructorOptions[] => {
+  const values = [100, 90, 80, 70, 60, 50, 40, 30, 20, 10]
+
+  return values.map(value => ({
+    label: `${value}%`,
+    type: "radio",
+    checked: windowOpacity === value,
+    click: () => setWindowOpacity(value)
+  }))
+}
+
 ipcMain.handle("context-menu", (event, {hasSelection}) => {
   const template: MenuItemConstructorOptions[] = [
     {label: "Copy", enabled: hasSelection, role: "copy"},
-    {label: "Paste", role: "paste"}
+    {label: "Paste", role: "paste"},
+    {type: "separator"},
+    {label: `Opacity (${windowOpacity}%)`, submenu: opacitySubmenu()}
   ]
 
   const menu = Menu.buildFromTemplate(template)
@@ -1179,6 +1204,12 @@ const applicationMenu = () =>  {
       submenu: [
         {role: "copy"},
         {role: "paste"}
+      ]
+    },
+    {
+      label: "View",
+      submenu: [
+        {label: `Opacity (${windowOpacity}%)`, submenu: opacitySubmenu()}
       ]
     },
     {role: "windowMenu"},
@@ -1215,6 +1246,7 @@ if (!singleLock) {
         preload: path.join(__dirname, "../preload/index.js")}})
     window.loadFile(path.join(__dirname, "../renderer/index.html"))
     window.removeMenu()
+    window.setOpacity(windowOpacity / 100)
     applicationMenu()
     if (process.platform === "darwin") {
       if (process.env.DEVELOPMENT === "true") {
