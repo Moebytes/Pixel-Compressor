@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run clean && rsbuild build && npm run copy && cross-env DEVELOPMENT=true electron dist/main/index.js",
     "build": "npm run clean ./build && rsbuild build && npm run copy && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
-    "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
+    "rebuild": "electron-rebuild -f -w sharp -w @napi-rs/canvas",
     "copy": "cp structures/pdf.worker.js dist/main/pdf.worker.js",
     "patch": "node patch.ts",
     "clean": "del-cli ./dist"

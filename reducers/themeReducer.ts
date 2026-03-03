@@ -15,6 +15,7 @@ export type Themes =
 export type OS =
     | "mac"
     | "windows"
+    | "linux"
 
 const themeSlice = createSlice({
     name: "theme",

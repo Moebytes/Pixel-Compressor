@@ -45,8 +45,19 @@ jobs:
           node-version: "23"
           cache: "npm"
 
+      - name: Install JXL (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvips-dev libjxl-dev
+
+      - name: Install JXL (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install vips jpeg-xl
+
       - name: Install dependencies
-        run: npm install
+        run: npm install --build-from-source
 
       - name: Rebuild native modules
         run: npm run rebuild

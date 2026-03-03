@@ -60,4 +60,5 @@ contextBridge.exposeInMainWorld("webFrame", {
     clearCache: () => webFrame.clearCache()
 })
 
-contextBridge.exposeInMainWorld("platform", process.platform === "darwin" ? "mac" : "windows")
+contextBridge.exposeInMainWorld("platform", process.platform === "darwin" ? "mac" : 
+    process.platform === "win32" ? "windows" : "linux")
