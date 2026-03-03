@@ -4,9 +4,10 @@
   "description": "An app that compresses and resizes images.",
   "main": "dist/main/index.js",
   "scripts": {
-    "start": "npm run clean && rsbuild build && cross-env DEVELOPMENT=true electron dist/main/index.js",
-    "build": "npm run clean ./build && rsbuild build && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
+    "start": "npm run clean && rsbuild build && npm run copy && cross-env DEVELOPMENT=true electron dist/main/index.js",
+    "build": "npm run clean ./build && rsbuild build && npm run copy && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
     "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
+    "copy": "cp pdf.min.mjs dist/main/pdf.min.mjs && cp pdf.worker.min.mjs dist/main/pdf.worker.min.mjs",
     "patch": "node patch.ts",
     "clean": "del-cli ./dist"
   },
@@ -145,7 +146,7 @@
     "imagemin-webp": "^6.0.0",
     "images-meta": "github:Moestash/images-meta",
     "mkv-subtitle-extractor": "^1.1.1",
-    "pdfjs-dist": "github:Moestash/pdfjs-dist",
+    "pdfjs-dist": "^5.5.207",
     "rc-slider": "^11.1.9",
     "react": "^19.2.4",
     "react-bootstrap": "^2.10.10",
