@@ -53,7 +53,6 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          npm config set sharp_use_global_libvips true
           npm install --build-from-source
 
       - name: Install dependencies (others)
