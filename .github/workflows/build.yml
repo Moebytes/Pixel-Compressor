@@ -45,32 +45,20 @@ jobs:
           node-version: "23"
           cache: "npm"
 
-      - name: Install JXL (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            pkg-config \
-            libglib2.0-dev \
-            libexpat1-dev \
-            libjpeg-dev \
-            libpng-dev \
-            libwebp-dev \
-            libtiff-dev \
-            libgif-dev \
-            libheif-dev \
-            libjxl-dev \
-            liborc-0.4-dev \
-            libvips-dev
-
       - name: Install JXL (macOS)
         if: runner.os == 'macOS'
         run: |
           brew install vips jpeg-xl
 
-      - name: Install dependencies
-        run: npm install --build-from-source
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          npm config set sharp_use_global_libvips true
+          npm install --build-from-source
+
+      - name: Install dependencies (others)
+        if: runner.os != 'macOS'
+        run: npm install
 
       - name: Rebuild native modules
         run: npm run rebuild
