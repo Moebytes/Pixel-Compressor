@@ -6,10 +6,9 @@
 
 import {createCanvas} from "@napi-rs/canvas"
 import path from "path"
-import * as pdfjs from "./pdf.min.mjs"
 import fs from "fs"
 
-pdfjs.GlobalWorkerOptions.workerSrc = "./pdf.worker.min.mjs"
+const pdfjs = require("pdfjs-dist/build/pdf.js")
 
 interface Options {
     width?: number

@@ -1,2 +1,1 @@
-pdf.min.mjs linguist-vendored
-pdf.worker.min.mjs linguist-vendored
+structures/pdf.worker.js linguist-vendored
