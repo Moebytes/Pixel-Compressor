@@ -45,18 +45,7 @@ jobs:
           node-version: "23"
           cache: "npm"
 
-      - name: Install JXL (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install vips jpeg-xl
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          npm install --build-from-source
-
-      - name: Install dependencies (others)
-        if: runner.os != 'macOS'
+      - name: Install dependencies
         run: npm install
 
       - name: Rebuild native modules

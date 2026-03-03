@@ -127,7 +127,7 @@ const OptionsBar: React.FunctionComponent = () => {
                             <Dropdown.Item active={format === "gif"} onClick={() => setFormat("gif")}>gif</Dropdown.Item>
                             <Dropdown.Item active={format === "webp"} onClick={() => setFormat("webp")}>webp</Dropdown.Item>
                             <Dropdown.Item active={format === "avif"} onClick={() => setFormat("avif")}>avif</Dropdown.Item>
-                            {window.platform === "mac" ? <Dropdown.Item active={format === "jxl"} onClick={() => setFormat("jxl")}>jxl</Dropdown.Item> : null}
+                            {/*<Dropdown.Item active={format === "jxl"} onClick={() => setFormat("jxl")}>jxl</Dropdown.Item>*/}
                         </DropdownButton>
                     </div>
                     <div className="options-bar-box">
