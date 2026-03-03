@@ -31,7 +31,7 @@ const renderPage = async (pdfDocument: any, pageNumber: number, options: Options
         viewport = page.getViewport({scale: newScale})
     }
 
-    if (!options.dpi) options.dpi = 300
+    if (!options.dpi) options.dpi = 72
     const dpiScale = options.dpi / 72
 
     const canvas = createCanvas(
