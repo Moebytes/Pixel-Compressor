@@ -49,7 +49,20 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libvips-dev libjxl-dev
+          sudo apt-get install -y \
+            build-essential \
+            pkg-config \
+            libglib2.0-dev \
+            libexpat1-dev \
+            libjpeg-dev \
+            libpng-dev \
+            libwebp-dev \
+            libtiff-dev \
+            libgif-dev \
+            libheif-dev \
+            libjxl-dev \
+            liborc-0.4-dev \
+            libvips-dev
 
       - name: Install JXL (macOS)
         if: runner.os == 'macOS'
