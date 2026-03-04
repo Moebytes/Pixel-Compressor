@@ -2,45 +2,40 @@
 
 <img src="assets/images/readme.png">
 
-This is an image compressor and resizer.
+A cute image compressor!
 
 ### Features:
-- Compress and resize images (PNG/JPG/WEBP/AVIF/JXL) and GIFs/Animated WebPs
-- Rename pictures according to the source from saucenao (original title, artist, pixiv ID, etc.)
-- Delete duplicate images (the one with the greatest dimensions is retained)
-- Flatten a folder (move all files in sub-folders to the parent and delete sub-folders)
-- Convert images to PDF (or a directory containing images)
-- Convert PDFs to image directories
-- Choose to overwrite images or write to a folder
+- Compress and resize images (JPG, PNG, WEBP, AVIF)
+- Compress and resize GIFs
 - Ignore images under a certain file size (to avoid over-compression)
 - Preview before and after images (right click on the thumbnails)
+- Delete duplicate images (found by perceptual hash)
 
 ### Rename Template:
-You can customize the output names. If it results in a blank name (eg. not found) it will default to using the same name as the input. If the "Overwrite" option is on, the original file is overwritten with the compressed file first and then renamed after. These are all the special replacements:
+These are all the special name replacements:
 
 {name} - The name of the original file. \
-{title} - The title of the Pixiv illustration, if found. \
-{englishTitle} - The title, but translated to English. \
-{id} - The Pixiv ID of the illustration, if found. \
-{artist} - The artist of the illustration, if found. \
 {width} - The destination width. \
-{height} - The destination height.
+{height} - The destination height. \
+{title} - The title of the Pixiv illustration, if found. \
+{englishTitle} - The title but translated to English. \
+{id} - The ID of the Pixiv illustration, if found. \
+{artist} - The artist of the Pixiv illustration, if found.
 
 ### Titlebar Buttons
 There are many utility functions on the titlebar. They do the following:
 
 MP3 - Select an mp3 and an image and the image will get added as the cover art.
 
-VTT - If ASS or SRT files are selected, they will be converted to VTT subtitles. If MKV videos are selected, the subtitles are
-extracted and converted to VTT. 
+VTT - If ASS or SRT files are selected, they will be converted to VTT subtitles.
 
-Rename - Select files within a directory and they are renamed according to the name of the directory. For example, if the directory is named "Yuru Yuri" the files will be renamed "Yuru Yuri 1", "Yuru Yuri 2", etc. going by alphabetic order.
+Rename - Select files within a directory and they will be renamed chronologically. For instance, if the directory is named "Yuru Yuri" the files will be renamed "Yuru Yuri 1", "Yuru Yuri 2", etc. going by alphabetic order.
 
-Image Cover - If PDF files are selected, it extracts the first image (the cover image). If a directory or images are selected, it converts all double pages to single pages (images with twice the width of all others).
+Image - Converts double pages to single pages (images with twice the width of all others).
 
-PDF -  If PDF files are selected, it converts it into a directory of images. If directories or images are selected, it converts them into PDF files.
+PDF -  If PDF files are selected, it converts it into a directory of images. If images are selected, it merges them into a PDF.
 
-Flatten - Flattens a directory, meaning that all files in all sub-directories are moved to the top level and the sub-directories are removed. This attempts to prevent naming conflicts by renaming files if the name would conflict with another.
+Flatten - Flattens a directory, so that all files in all sub-directories are moved to the top level. This attempts to prevent naming conflicts by renaming files if the name would conflict with another.
 
 ### Keyboard Shortcuts
 - Ctrl O - Open images

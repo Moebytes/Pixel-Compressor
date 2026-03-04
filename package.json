@@ -1,7 +1,7 @@
 {
   "name": "pixel-compressor",
   "version": "1.0.0",
-  "description": "An app that compresses and resizes images.",
+  "description": "A cute image compressor!",
   "main": "dist/main/index.js",
   "scripts": {
     "start": "npm run clean && rsbuild build && npm run copy && npm run gif-copy && cross-env DEVELOPMENT=true electron dist/main/index.js",
