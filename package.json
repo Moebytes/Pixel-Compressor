@@ -44,7 +44,7 @@
       "extraResources": [
         {
           "from": "vendor/gifsicle.app",
-          "to": "dist/vendor/gifsicle"
+          "to": "app.asar.unpacked/dist/vendor/gifsicle"
         }
       ]
     },
@@ -64,7 +64,7 @@
       "extraResources": [
         {
           "from": "vendor/gifsicle.exe",
-          "to": "dist/vendor/gifsicle.exe"
+          "to": "app.asar.unpacked/dist/vendor/gifsicle.exe"
         }
       ]
     },
@@ -87,7 +87,7 @@
       "extraResources": [
         {
           "from": "vendor/gifsicle",
-          "to": "dist/vendor/gifsicle"
+          "to": "app.asar.unpacked/dist/vendor/gifsicle"
         }
       ]
     },
@@ -97,8 +97,7 @@
     ],
     "asar": true,
     "asarUnpack": [
-      "node_modules/**/*.node",
-      "dist/vendor/**/*"
+      "node_modules/**/*.node"
     ],
     "publish": {
       "provider": "github",
