@@ -1250,10 +1250,9 @@ if (!singleLock) {
     applicationMenu()
     if (process.platform === "darwin") {
       if (process.env.DEVELOPMENT === "true") {
-        fs.chmodSync(path.join(__dirname, "../../vendor/mac/cjpeg"), "777")
-        fs.chmodSync(path.join(__dirname, "../../vendor/mac/cwebp"), "777")
-        fs.chmodSync(path.join(__dirname, "../../vendor/mac/gifsicle"), "777")
-        fs.chmodSync(path.join(__dirname, "../../vendor/mac/pngquant"), "777")
+        fs.chmodSync(path.join(__dirname, "../vendor/gifsicle"), "777")
+      } else {
+        fs.chmodSync(path.join(app.getAppPath(), "../../vendor/gifsicle"), "777")
       }
     }
     localShortcut.register(window, "Control+Shift+I", () => {

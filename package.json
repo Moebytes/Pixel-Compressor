@@ -4,10 +4,11 @@
   "description": "An app that compresses and resizes images.",
   "main": "dist/main/index.js",
   "scripts": {
-    "start": "npm run clean && rsbuild build && npm run copy && cross-env DEVELOPMENT=true electron dist/main/index.js",
+    "start": "npm run clean && rsbuild build && npm run copy && npm run gif-copy && cross-env DEVELOPMENT=true electron dist/main/index.js",
     "build": "npm run clean ./build && rsbuild build && npm run copy && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
     "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
     "copy": "cp structures/pdf.worker.js dist/main/pdf.worker.js",
+    "gif-copy": "mkdir dist/vendor && cp vendor/gifsicle.app dist/vendor/gifsicle",
     "patch": "node patch.ts",
     "clean": "del-cli ./dist"
   },
@@ -39,7 +40,13 @@
         "target": "dmg",
         "arch": "arm64"
       },
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "extraResources": [
+        {
+          "from": "vendor/gifsicle.app",
+          "to": "dist/vendor/gifsicle"
+        }
+      ]
     },
     "dmg": {
       "title": "${productName}",
@@ -53,7 +60,13 @@
       "target": {
         "target": "nsis",
         "arch": "x64"
-      }
+      },
+      "extraResources": [
+        {
+          "from": "vendor/gifsicle.exe",
+          "to": "dist/vendor/gifsicle.exe"
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -70,7 +83,13 @@
         "arch": "x64"
       },
       "category": "Utility",
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "extraResources": [
+        {
+          "from": "vendor/gifsicle",
+          "to": "dist/vendor/gifsicle"
+        }
+      ]
     },
     "files": [
       "dist/**/*",
@@ -78,7 +97,8 @@
     ],
     "asar": true,
     "asarUnpack": [
-      "node_modules/**/*.node"
+      "node_modules/**/*.node",
+      "dist/vendor/**/*"
     ],
     "publish": {
       "provider": "github",
