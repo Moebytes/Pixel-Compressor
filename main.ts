@@ -80,6 +80,18 @@ ipcMain.handle("shell:showItemInFolder", (event, location: string) => {
   shell.showItemInFolder(path.normalize(location))
 })
 
+ipcMain.handle("path:basename", (event, pathname: string, suffix?: string) => {
+  return path.basename(pathname, suffix)
+})
+
+ipcMain.handle("path:extname", (event, pathname: string) => {
+  return path.extname(pathname)
+})
+
+ipcMain.handle("path:normalize", (event, pathname: string) => {
+  return path.normalize(pathname)
+})
+
 ipcMain.handle("song-cover", async (event, files: string[]) => {
   const MP3s = files.filter((f) => path.extname(f) === ".mp3")
   const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 

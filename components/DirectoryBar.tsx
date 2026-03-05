@@ -47,8 +47,7 @@ const DirectoryBar: React.FunctionComponent = () => {
 
     const openDirectory = () => {
         if (source) return
-        const dir = functions.escape(directory)
-        window.ipcRenderer.invoke("open-location", dir, true)
+        window.ipcRenderer.invoke("open-location", directory, true)
     }
 
     const sourceAction = () => {

@@ -1,4 +1,3 @@
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Pixel Compressor - A cute image compressor ❤              *
  * Copyright © 2026 Moebytes <moebytes.com>                  *
@@ -8,7 +7,6 @@
 import GifEncoder from "gif-encoder"
 import pixels from "image-pixels"
 import gifFrames from "gif-frames"
-import path from "path"
 import {lightColorList, darkColorList} from "../LocalStorage"
 
 const images = [".png", ".jpg", ".jpeg", ".webp", ".avif", ".jxl", ".tiff"]
@@ -23,14 +21,15 @@ export default class Functions {
     }
 
     public static cleanTitle = (str: string) => {
-        const ext = path.extname(str)
-        const split = str.match(/.{1,30}/g)?.join(" ").replace(ext, "")!
-        return `${split.slice(0, 70)}${ext}`
+        const ext = str.split(".").pop() ?? ""
+        const split = str.match(/.{1,30}/g)?.join(" ").replace(`.${ext}`, "")!
+        return `${split.slice(0, 70)}.${ext}`
     }
 
     public static getType = (str: string) => {
-        if (Functions.arrayIncludes(path.extname(str), images)) return "image"
-        if (Functions.arrayIncludes(path.extname(str), gifs)) return "gif"
+        let ext = `.${str.split(".").pop() ?? ""}`
+        if (Functions.arrayIncludes(ext, images)) return "image"
+        if (Functions.arrayIncludes(ext, gifs)) return "gif"
     }
 
     public static arrayRemove = <T>(arr: T[], val: T) => {
@@ -54,10 +53,6 @@ export default class Functions {
     public static readableFileSize = (bytes: number) => {
         const i = bytes === 0 ? 0 : Math.floor(Math.log(bytes) / Math.log(1024))
         return `${Number((bytes / Math.pow(1024, i)).toFixed(2))} ${["B", "KB", "MB", "GB", "TB"][i]}`
-    }
-
-    public static escape = (str: string) => {
-        return path.normalize(str).replace(/(?<!\\)\\(?!\\)/g, "/")
     }
 
     public static parseFileSize = (size: string) => {
@@ -233,5 +228,11 @@ export default class Functions {
             document.documentElement.style.setProperty("--previewBG", "transparent")
             document.documentElement.style.setProperty("--previewBG2", "transparent")
         }
+    }
+
+    public static basename = (str: string, suffix?: boolean) => {
+        let sep = window.platform === "windows" ? "\\" : "/"
+        let base = str.split(sep).pop() ?? ""
+        return suffix ? base : base.replace(/\.[^/.]+$/, "")
     }
 }

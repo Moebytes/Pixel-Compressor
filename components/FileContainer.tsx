@@ -4,7 +4,6 @@
  * Licensed under CC BY-NC 4.0. See license.txt for details. *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-import path from "path"
 import React, {useEffect, useEffectEvent, useRef, useState, useReducer} from "react"
 import {ProgressBar} from "react-bootstrap"
 import pSBC from "shade-blend-color"
@@ -118,7 +117,8 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
         percentage, keepRatio, rename, format, progressive})
         setNewBuffer(buffer)
         setNewFileSize(functions.readableFileSize(fileSize))
-        const type = format === "original" ? path.extname(props.source).replaceAll(".", "") : format
+        let ext = await window.path.extname(props.source)
+        const type = format === "original" ? ext.replaceAll(".", "") : format
         window.ipcRenderer.invoke("preview-realtime", {id: props.id, newSource: functions.bufferToBase64(functions.arrayBufferToBuffer(buffer), type), newFileSize: functions.readableFileSize(fileSize)})
         await functions.timeout(5000)
     }
@@ -245,12 +245,12 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
         document.documentElement.style.setProperty("--selection-color", "#ffb5cb")
     }
 
-    const openLocation = (direct?: boolean) => {
+    const openLocation = async (direct?: boolean) => {
         const location = output ? output : props.source
         if (direct) {
-            window.shell.openPath(path.normalize(location))
+            window.shell.openPath(location)
         } else {
-            window.shell.showItemInFolder(path.normalize(location))
+            window.shell.showItemInFolder(location)
         }
     }
 
@@ -266,12 +266,13 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
         }
     }
 
-    const preview = (event: React.MouseEvent<HTMLElement>) => {
+    const preview = async (event: React.MouseEvent<HTMLElement>) => {
         event.preventDefault()
         event.stopPropagation()
-        const title = output ? functions.cleanTitle(path.basename(output)) : 
-            functions.cleanTitle(path.basename(props.source))
-        const type = format === "original" ? path.extname(props.source).replaceAll(".", "") : format
+        const title = output ? functions.cleanTitle(await window.path.basename(output)) : 
+            functions.cleanTitle(await window.path.basename(props.source))
+        let ext = await window.path.extname(props.source)
+        const type = format === "original" ? ext.replaceAll(".", "") : format
         if (event.type === "contextmenu") {
             window.ipcRenderer.invoke("preview", {id: props.id, title, source: props.source, fileSize: props.fileSize, 
                 newSource: functions.bufferToBase64(functions.arrayBufferToBuffer(newBuffer), type), newFileSize})
@@ -291,7 +292,7 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
             <div className="file-middle">
                 <div className="file-group-top">
                     <div className="file-name">
-                        <p className="file-text bigger"><span className="hover" onClick={() => openLocation(true)}>{output ? functions.cleanTitle(path.basename(output)) : functions.cleanTitle(path.basename(props.source))}</span></p>
+                        <p className="file-text bigger"><span className="hover" onClick={() => openLocation(true)}>{output ? functions.cleanTitle(functions.basename(output)) : functions.cleanTitle(functions.basename(props.source))}</span></p>
                         <p className="file-text bigger pink">{diffPercentage()}</p>
                     </div>
                     <div className="file-info">
