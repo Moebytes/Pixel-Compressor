@@ -8,8 +8,8 @@
     "start": "npm run clean && rsbuild build && npm run copy && npm run gif-copy && electron dist/main/index.js",
     "build": "npm run clean ./build && rsbuild build && npm run copy && electron-builder -p never",
     "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
-    "copy": "cp structures/pdf.worker.js dist/main/pdf.worker.js",
     "gif-copy": "mkdir dist/vendor && cp vendor/gifsicle.app dist/vendor/gifsicle",
+    "copy": "node copy.ts",
     "patch": "node patch.ts",
     "clean": "del-cli ./dist"
   },
