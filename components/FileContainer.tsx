@@ -284,15 +284,19 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
     }
 
     return (
-        <section ref={fileContainerRef} className="file-wrap-container" onMouseOver={() => setHover(true)} onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
-            <div className="file-container" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} onMouseDown={() => setDrag(false)} onMouseMove={() => setDrag(true)}>
+        <section ref={fileContainerRef} className="file-wrap-container" onMouseOver={() => setHover(true)} 
+            onMouseEnter={mouseEnter} onMouseLeave={mouseLeave}>
+            <div className="file-container" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} 
+                onMouseDown={() => setDrag(false)} onMouseMove={() => setDrag(true)}>
             <div className="file-img-container">
                 <img className="file-img" onMouseDown={delayPress} onContextMenu={preview} src={output ? output : props.source}/>
             </div>
             <div className="file-middle">
                 <div className="file-group-top">
                     <div className="file-name">
-                        <p className="file-text bigger"><span className="hover" onClick={() => openLocation(true)}>{output ? functions.cleanTitle(functions.basename(output)) : functions.cleanTitle(functions.basename(props.source))}</span></p>
+                        <p className="file-text bigger"><span className="hover" onMouseDown={(event: any) => event.stopPropagation()} 
+                            onClick={() => openLocation(true)}>{output ? functions.cleanTitle(functions.basename(output)) : 
+                                functions.cleanTitle(functions.basename(props.source))}</span></p>
                         <p className="file-text bigger pink">{diffPercentage()}</p>
                     </div>
                     <div className="file-info">
@@ -311,15 +315,19 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
                 </div>
             </div>
             <div className="file-buttons">
-                {hover ? <CloseContainerIcon className="file-button close-container" onClick={closeConversion}/> : null}
+                {hover ? <CloseContainerIcon className="file-button close-container" onMouseDown={(event: any) => event.stopPropagation()} 
+                    onClick={closeConversion}/> : null}
                 <div className="file-button-row">
-                    <button className="file-button start-button" onClick={() => {started ? stopConversion() : startConversion()}}>
+                    <button className="file-button start-button" onClick={() => {started ? stopConversion() : startConversion()}}
+                        onMouseDown={(event: any) => event.stopPropagation()}>
                         {started ? "Stop" : "Start"}
                     </button>
                 </div>
                 <div className="file-button-row">
-                    {output ? <LocationIcon className="file-button" onClick={() => openLocation()} style={{color: "var(--locationButton)"}}/> : null}
-                    {output ? <TrashIcon className="file-button" onClick={() => deleteConversion()} style={{color: "var(--trashButton)"}}/> : null}
+                    {output ? <LocationIcon className="file-button" onMouseDown={(event: any) => event.stopPropagation()} 
+                        onClick={() => openLocation()} style={{color: "var(--locationButton)"}}/> : null}
+                    {output ? <TrashIcon className="file-button" onMouseDown={(event: any) => event.stopPropagation()} 
+                        onClick={() => deleteConversion()} style={{color: "var(--trashButton)"}}/> : null}
                 </div>
             </div>
             </div>

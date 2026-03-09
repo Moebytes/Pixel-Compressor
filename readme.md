@@ -49,14 +49,7 @@ Our design is available here: https://www.figma.com/design/lTUtTd5bAHSxvg3uTzNWI
 
 Download from [releases](https://github.com/Moebytes/Image-Compressor/releases).
 
-### MacOS
-
-On MacOS unsigned applications won't open, run this to remove the quarantine flag.
-```
-xattr -d com.apple.quarantine "/Applications/Image Compressor.app"
-```
-
 ### Also See
 
-- [Waifu2x GUI](https://github.com/Moebytes/Waifu2x-GUI)
+- [Waifu2x Upscaler](https://github.com/Moebytes/Waifu2x-Upscaler)
 

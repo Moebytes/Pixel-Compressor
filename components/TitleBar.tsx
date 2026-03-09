@@ -14,7 +14,6 @@ import CloseIcon from "../assets/svg/close.svg"
 import MinimizeIcon from "../assets/svg/minimize.svg"
 import MaximizeIcon from "../assets/svg/maximize.svg"
 import Icon from "../assets/svg/icon.svg"
-import MP3Icon from "../assets/svg/mp3.svg"
 import VTTIcon from "../assets/svg/vtt.svg"
 import RenameIcon from "../assets/svg/rename.svg"
 import CoverIcon from "../assets/svg/cover.svg"
@@ -48,11 +47,6 @@ const TitleBar: React.FunctionComponent = (props) => {
 
     const maximize = () => {
         window.ipcRenderer.invoke("maximize")
-    }
-
-    const mp3 = async () => {
-        const files = await window.ipcRenderer.invoke("multi-open", "songcover")
-        if (files?.[0]) window.ipcRenderer.invoke("song-cover", files)
     }
 
     const vtt = async () => {
@@ -116,7 +110,6 @@ const TitleBar: React.FunctionComponent = (props) => {
                     <span className="title">Pixel Compressor</span>
                 </div>
                 <div className="title-button-container">
-                    <MP3Icon className="title-bar-button" onClick={mp3}/>
                     <VTTIcon className="title-bar-button" onClick={vtt}/>
                     <RenameIcon className="title-bar-button" onClick={rename}/>
                     <CoverIcon className="title-bar-button" onClick={cover}/>
@@ -142,7 +135,6 @@ const TitleBar: React.FunctionComponent = (props) => {
                     <span className="title">Pixel Compressor</span>
                 </div>
                 <div className="title-button-container">
-                    <MP3Icon className="title-bar-button" onClick={mp3}/>
                     <VTTIcon className="title-bar-button" onClick={vtt}/>
                     <RenameIcon className="title-bar-button" onClick={rename}/>
                     <CoverIcon className="title-bar-button" onClick={cover}/>

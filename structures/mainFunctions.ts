@@ -11,6 +11,14 @@ import {translate} from "bing-translate-api"
 import functions from "./functions"
 
 export default class MainFunctions {
+    public static filterImages = (files: string[]) => {
+        return files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
+          || path.extname(f).toLowerCase() === ".jpeg"
+          || path.extname(f).toLowerCase() === ".png" 
+          || path.extname(f).toLowerCase() === ".webp"
+          || path.extname(f).toLowerCase() === ".avif")
+    }
+
     public static translateTitle = async (title: string) => {
         if (!title) return ""
         try {

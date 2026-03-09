@@ -1,11 +1,12 @@
 {
   "name": "pixel-compressor",
   "version": "1.0.0",
+  "author": "Moebytes",
   "description": "A cute image compressor!",
   "main": "dist/main/index.js",
   "scripts": {
-    "start": "npm run clean && rsbuild build && npm run copy && npm run gif-copy && cross-env DEVELOPMENT=true electron dist/main/index.js",
-    "build": "npm run clean ./build && rsbuild build && npm run copy && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder -p never",
+    "start": "npm run clean && rsbuild build && npm run copy && npm run gif-copy && electron dist/main/index.js",
+    "build": "npm run clean ./build && rsbuild build && npm run copy && electron-builder -p never",
     "rebuild": "electron-rebuild -f -w @napi-rs/canvas",
     "copy": "cp structures/pdf.worker.js dist/main/pdf.worker.js",
     "gif-copy": "mkdir dist/vendor && cp vendor/gifsicle.app dist/vendor/gifsicle",
@@ -22,10 +23,9 @@
     "renamer",
     "anime"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Moebytes/Pixel-Compressor"
-  },
+  "repository": "https://github.com/Moebytes/Pixel-Compressor",
+  "privacyPolicy": "https://moebytes.com/privacy-policy",
+  "license": "CC BY-NC 4.0",
   "build": {
     "appId": "com.moebytes.pixel-compressor",
     "productName": "Pixel Compressor",
@@ -37,9 +37,11 @@
     "buildDependenciesFromSource": true,
     "mac": {
       "target": {
-        "target": "dmg",
+        "target": "mas",
         "arch": "arm64"
       },
+      "type": "distribution",
+      "provisioningProfile": "assets/mas/MacAppStore.provisionprofile",
       "category": "public.app-category.utilities",
       "extraResources": [
         {
@@ -47,6 +49,10 @@
           "to": "app.asar.unpacked/dist/vendor/gifsicle"
         }
       ]
+    },
+    "mas": {
+      "entitlements": "assets/mas/entitlements.mas.plist",
+      "entitlementsInherit": "assets/mas/entitlements.mas.inherit.plist"
     },
     "dmg": {
       "title": "${productName}",
@@ -82,8 +88,7 @@
       "publisher": "CN=4C1B763B-CF01-4978-8749-986F562173D8, OID.2.25.311729368913984317654407730594956997722=1",
       "publisherDisplayName": "Moebytes",
       "capabilities": [
-          "runFullTrust", 
-          "broadFileSystemAccess"
+          "runFullTrust"
       ]
     },
     "linux": {
@@ -106,17 +111,9 @@
     ],
     "asar": true,
     "asarUnpack": [
-      "node_modules/**/*.node"
-    ],
-    "publish": {
-      "provider": "github",
-      "repo": "Pixel-Compressor",
-      "owner": "Moebytes",
-      "releaseType": "draft"
-    }
+      "**/*.node"
+    ]
   },
-  "author": "Moebytes",
-  "license": "CC BY-NC 4.0",
   "devDependencies": {
     "@electron-rsbuild/plugin-main": "^0.0.12",
     "@electron-rsbuild/plugin-preload": "^0.0.12",
@@ -187,7 +184,6 @@
     "shade-blend-color": "^1.0.0",
     "sharp": "^0.34.5",
     "sharp-phash": "^2.2.0",
-    "spawn-sync": "^2.0.0",
     "srt-to-vtt": "^1.1.3"
   }
 }

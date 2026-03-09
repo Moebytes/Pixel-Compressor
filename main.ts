@@ -92,94 +92,6 @@ ipcMain.handle("path:normalize", (event, pathname: string) => {
   return path.normalize(pathname)
 })
 
-ipcMain.handle("song-cover", async (event, files: string[]) => {
-  const MP3s = files.filter((f) => path.extname(f) === ".mp3")
-  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
-  || path.extname(f).toLowerCase() === ".jpeg"
-  || path.extname(f).toLowerCase() === ".png" 
-  || path.extname(f).toLowerCase() === ".webp"
-  || path.extname(f).toLowerCase() === ".avif")
-
-  for (let i = 0; i < MP3s.length; i++) {
-    if (!images[i]) break
-    const songBuffer = fs.readFileSync(MP3s[i])
-    const imageBuffer = fs.readFileSync(images[i])
-
-    const writer = new ID3Writer(songBuffer.buffer)
-    .setFrame("APIC" as any, {type: 3, data: imageBuffer, description: "Song Cover", useUnicodeEncoding: false} as any)
-    writer.addTag()
-
-    const arrayBuffer = await writer.getBlob().arrayBuffer()
-    fs.writeFileSync(MP3s[i], Buffer.from(arrayBuffer))
-  }
-
-  shell.showItemInFolder(MP3s[0])
-})
-
-const removeDoubles = async (images: string[], dontProcessAll?: boolean) => {
-  images = images.sort(new Intl.Collator(undefined, {numeric: true, sensitivity: "base"}).compare)
-
-  let doubleImages: string[] = []
-  let widthMap = {} as any 
-
-  for (let i = 0; i < images.length; i++) {
-    const metadata = await sharp(images[i], {limitInputPixels: false}).metadata()
-    const width = metadata.width || 0
-    if (widthMap[width]) {
-      widthMap[width] += 1
-    } else {
-      widthMap[width] = 1
-    }
-  }
-
-  let commonWidth = 0
-  let freq = 0
-  for (let i = 0; i < Object.keys(widthMap).length; i++) {
-    const key = Object.keys(widthMap)[i]
-    const value = Object.values(widthMap)[i]
-    if (freq < Number(value)) {
-      freq = Number(value) 
-      commonWidth = Number(key)
-    }
-  }
-
-  for (let i = 0; i < images.length; i++) {
-    const metadata = await sharp(images[i], {limitInputPixels: false}).metadata()
-    const width = metadata.width || 0
-    if (width > commonWidth * 1.5) {
-      doubleImages.push(images[i])
-    }
-  }
-
-  // If all images have the same width, treat all of them as doubles 
-  if (!doubleImages.length) {
-    if (!dontProcessAll) doubleImages = images
-  }
-
-  for (let i = 0; i < doubleImages.length; i++) {
-    const metadata = await sharp(doubleImages[i], {limitInputPixels: false}).metadata()
-    const width = metadata.width || 0
-    const height = metadata.height || 0
-    const newWidth = Math.floor(width / 2)
-    const page1 = `${path.dirname(doubleImages[i])}/${path.basename(doubleImages[i], path.extname(doubleImages[i]))}.1${path.extname(doubleImages[i])}`
-    const page2 = `${path.dirname(doubleImages[i])}/${path.basename(doubleImages[i], path.extname(doubleImages[i]))}.2${path.extname(doubleImages[i])}`
-    await sharp(doubleImages[i], {limitInputPixels: false})
-        .extract({left: newWidth, top: 0, width: newWidth, height: height})
-        .toFile(page1)
-    await sharp(doubleImages[i], {limitInputPixels: false})
-        .extract({left: 0, top: 0, width: newWidth, height: height})
-        .toFile(page2)
-  }
-
-  const promiseArray: any[] = []
-  for (let i = 0; i < doubleImages.length; i++) {
-    promiseArray.push(new Promise<void>((resolve) => {
-      fs.unlink(doubleImages[i], () => resolve())
-    }))
-  }
-  await Promise.all(promiseArray)
-}
-
 ipcMain.handle("remove-duplicate-subs", async (event, files: string[]) => {
   for (let i = 0; i < files.length; i++) {
     const content = fs.readFileSync(files[i]).toString().split("\n")
@@ -264,6 +176,12 @@ ipcMain.handle("extract-subtitles", async (event, files: string[]) => {
 
   for (let i = 0; i < directories.length; i++) {
     const dir = directories[i]
+    try {
+      await ensureWritableDirectory(dir)
+    } catch {
+      return
+    }
+
     let files = fs.readdirSync(dir).map((i) => path.join(dir, i))
     let videos = files.filter((f) => path.extname(f).toLowerCase() === ".mkv")
     let subs = files.filter((f) => path.extname(f).toLowerCase() === ".srt" || path.extname(f).toLowerCase() === ".ass")
@@ -300,8 +218,14 @@ ipcMain.handle("extract-subtitles", async (event, files: string[]) => {
 })
 
 ipcMain.handle("rename", async (event, files: string[]) => {
-  const directoryName = path.basename(path.dirname(files[0]))
+  let directory = path.dirname(files[0])
+  try {
+    await ensureWritableDirectory(directory)
+  } catch {
+    return
+  }
 
+  const directoryName = path.basename(directory)
   const fileNames = files.map((f) => path.basename(f, path.extname(f)))
 
   let renamed = false 
@@ -374,19 +298,85 @@ const createPDF = async (dir: string, images: string[]) => {
   pdf.end()
 }
 
+const removeDoubles = async (images: string[], dontProcessAll?: boolean) => {
+  images = images.sort(new Intl.Collator(undefined, {numeric: true, sensitivity: "base"}).compare)
+
+  let doubleImages: string[] = []
+  let widthMap = {} as any 
+
+  for (let i = 0; i < images.length; i++) {
+    const metadata = await sharp(images[i], {limitInputPixels: false}).metadata()
+    const width = metadata.width || 0
+    if (widthMap[width]) {
+      widthMap[width] += 1
+    } else {
+      widthMap[width] = 1
+    }
+  }
+
+  let commonWidth = 0
+  let freq = 0
+  for (let i = 0; i < Object.keys(widthMap).length; i++) {
+    const key = Object.keys(widthMap)[i]
+    const value = Object.values(widthMap)[i]
+    if (freq < Number(value)) {
+      freq = Number(value) 
+      commonWidth = Number(key)
+    }
+  }
+
+  for (let i = 0; i < images.length; i++) {
+    const metadata = await sharp(images[i], {limitInputPixels: false}).metadata()
+    const width = metadata.width || 0
+    if (width > commonWidth * 1.5) {
+      doubleImages.push(images[i])
+    }
+  }
+
+  // If all images have the same width, treat all of them as doubles 
+  if (!doubleImages.length) {
+    if (!dontProcessAll) doubleImages = images
+  }
+
+  for (let i = 0; i < doubleImages.length; i++) {
+    const metadata = await sharp(doubleImages[i], {limitInputPixels: false}).metadata()
+    const width = metadata.width || 0
+    const height = metadata.height || 0
+    const newWidth = Math.floor(width / 2)
+    const page1 = `${path.dirname(doubleImages[i])}/${path.basename(doubleImages[i], path.extname(doubleImages[i]))}.1${path.extname(doubleImages[i])}`
+    const page2 = `${path.dirname(doubleImages[i])}/${path.basename(doubleImages[i], path.extname(doubleImages[i]))}.2${path.extname(doubleImages[i])}`
+    await sharp(doubleImages[i], {limitInputPixels: false})
+        .extract({left: newWidth, top: 0, width: newWidth, height: height})
+        .toFile(page1)
+    await sharp(doubleImages[i], {limitInputPixels: false})
+        .extract({left: 0, top: 0, width: newWidth, height: height})
+        .toFile(page2)
+  }
+
+  const promiseArray: any[] = []
+  for (let i = 0; i < doubleImages.length; i++) {
+    promiseArray.push(new Promise<void>((resolve) => {
+      fs.unlink(doubleImages[i], () => resolve())
+    }))
+  }
+  await Promise.all(promiseArray)
+}
+
 ipcMain.handle("pdf-cover", async (event, files: string[]) => {
   const directories = files.filter((f) => fs.lstatSync(f).isDirectory())
   const PDFs = files.filter((f) => path.extname(f) === ".pdf")
-  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
-  || path.extname(f).toLowerCase() === ".jpeg"
-  || path.extname(f).toLowerCase() === ".png" 
-  || path.extname(f).toLowerCase() === ".webp"
-  || path.extname(f).toLowerCase() === ".avif")
+  const images = mainFunctions.filterImages(files)
 
   let openDir = ""
 
   for (let i = 0; i < PDFs.length; i++) {
     const dir = path.dirname(PDFs[i])
+    try {
+      await ensureWritableDirectory(dir)
+    } catch {
+      return
+    }
+
     const saveFilename = path.basename(PDFs[i], path.extname(PDFs[i]))
     const savePath = path.join(dir, saveFilename)
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
@@ -394,11 +384,7 @@ ipcMain.handle("pdf-cover", async (event, files: string[]) => {
     .then(async () => {
       fs.unlinkSync(PDFs[i])
       let images = fs.readdirSync(savePath).map((i) => path.join(savePath, i))
-      images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
-        || path.extname(f).toLowerCase() === ".jpeg"
-        || path.extname(f).toLowerCase() === ".png" 
-        || path.extname(f).toLowerCase() === ".webp"
-        || path.extname(f).toLowerCase() === ".avif")
+      images = mainFunctions.filterImages(images)
       await extractCover(savePath, images)
       try {
         fs.rmdirSync(savePath)
@@ -412,12 +398,14 @@ ipcMain.handle("pdf-cover", async (event, files: string[]) => {
 
   for (let i = 0; i < directories.length; i++) {
     const dir = directories[i]
+    try {
+      await ensureWritableDirectory(dir)
+    } catch {
+      return
+    }
+
     let images = fs.readdirSync(dir).map((i) => path.join(dir, i))
-    images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
-      || path.extname(f).toLowerCase() === ".jpeg"
-      || path.extname(f).toLowerCase() === ".png" 
-      || path.extname(f).toLowerCase() === ".webp"
-      || path.extname(f).toLowerCase() === ".avif")
+    images = mainFunctions.filterImages(images)
     await removeDoubles(images, true)
     if (!openDir) openDir = images[0]
   }
@@ -432,22 +420,20 @@ ipcMain.handle("pdf-cover", async (event, files: string[]) => {
 ipcMain.handle("pdf", async (event, files: string[]) => {
   const directories = files.filter((f) => fs.lstatSync(f).isDirectory())
   const PDFs = files.filter((f) => path.extname(f) === ".pdf")
-  const images = files.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
-    || path.extname(f).toLowerCase() === ".jpeg"
-    || path.extname(f).toLowerCase() === ".png" 
-    || path.extname(f).toLowerCase() === ".webp"
-    || path.extname(f).toLowerCase() === ".avif")
+  const images = mainFunctions.filterImages(files)
 
   let openDir = ""
 
   for (let i = 0; i < directories.length; i++) {
     const dir = directories[i]
+    try {
+      await ensureWritableDirectory(dir)
+    } catch {
+      return
+    }
+
     let images = fs.readdirSync(dir).map((i) => path.join(dir, i))
-    images = images.filter((f) => path.extname(f).toLowerCase() === ".jpg" 
-      || path.extname(f).toLowerCase() === ".jpeg"
-      || path.extname(f).toLowerCase() === ".png" 
-      || path.extname(f).toLowerCase() === ".webp"
-      || path.extname(f).toLowerCase() === ".avif")
+    images = mainFunctions.filterImages(images)
     await createPDF(dir, images)
     try {
       fs.rmdirSync(dir)
@@ -459,6 +445,12 @@ ipcMain.handle("pdf", async (event, files: string[]) => {
 
   for (let i = 0; i < PDFs.length; i++) {
     const dir = path.dirname(PDFs[i])
+    try {
+      await ensureWritableDirectory(dir)
+    } catch {
+      return
+    }
+
     const saveFilename = path.basename(PDFs[i], path.extname(PDFs[i]))
     const savePath = path.join(dir, saveFilename)
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
@@ -469,6 +461,13 @@ ipcMain.handle("pdf", async (event, files: string[]) => {
   }
 
   if (images.length) {
+    const dir = path.dirname(images[0])
+    try {
+      await ensureWritableDirectory(dir)
+    } catch {
+      return
+    }
+
     await createPDF(images[0], images)
     if (!openDir) openDir = images[0]
   }
@@ -478,15 +477,14 @@ ipcMain.handle("pdf", async (event, files: string[]) => {
 ipcMain.handle("multi-open", async (event, type?: string) => {
   let title = "Convert or Extract PDF"
   let button = "Convert"
-  if (type === "cover") title = "PDF or Image Directory Cover"
   if (type === "subs") title = "Convert to VTT Subtitles"
+  if (type === "cover") {
+    title = "Double to Single Pages"
+    button = "Slice"
+  }
   if (type === "rename") {
     title = "Rename by Directory"
     button = "Rename"
-  }
-  if (type === "songcover") {
-    title = "Add MP3 Cover"
-    button = "Add"
   }
   if (!window) return
   const result = await dialog.showOpenDialog(window, {
@@ -516,6 +514,12 @@ const subFiles = (directory: string) => {
 }
 
 ipcMain.handle("flatten", async (event, directory: string) => {
+  try {
+    await ensureWritableDirectory(directory)
+  } catch {
+    return
+  }
+
   const {files, directories} = subFiles(directory)
 
   const nameCounts = {} as {[key: string]: number}
@@ -569,13 +573,11 @@ ipcMain.handle("show-help-dialog", async (event: any, i: number) => {
   const detail = [
     "== Titlebar Functions ==",
     "",
-    "MP3 - Select an image and an mp3 file to add the image as cover art.",
-    "",
     "VTT - Select ASS or SRT subtitles to convert them to VTT.",
     "",
     "Rename - Select files within a directory and they are renamed with the directory name chronologically.",
     "",
-    "Image - Select images to convert double pages to single pages (images with twice the width of others).",
+    "Image - Select images to convert double pages into single pages (slices the pages in half).",
     "",
     "PDF - Select images to convert to PDF or a PDF to extract images.",
     "",
@@ -583,7 +585,7 @@ ipcMain.handle("show-help-dialog", async (event: any, i: number) => {
     "",
     "== Overwriting Original ==",
     "",
-    "Same destination as the source overwrites the original. You can do this by setting directory to {source}, rename to {name}, and format to original.",
+    "Same destination as the source overwrites the original. Achieved by setting directory to {source}, rename to {name}, and format to original.",
     "",
     "== Delete Duplicates ==",
     "",
@@ -771,6 +773,46 @@ const nextQueue = async (info: any) => {
   }
 }
 
+const ensureWritable = async (dest: string) => {
+  try {
+    fs.writeFileSync(dest, "")
+    fs.unlinkSync(dest)
+    return dest
+  } catch {
+     if (!window) throw new Error("error")
+      const save = await dialog.showSaveDialog(window, {
+        title: "Select Output",
+        defaultPath: dest,
+        properties: ["createDirectory"]
+      })
+
+      if (save.canceled || !save.filePath) {
+        throw new Error("cancelled")
+      }
+
+      return save.filePath.replace(/\\/g, "/")
+  }
+}
+
+const ensureWritableDirectory = async (dir: string) => {
+  try {
+    let test = path.join(dir, "test.jpg")
+    fs.writeFileSync(test, "")
+    fs.unlinkSync(test)
+  } catch {
+    if (window) {
+      await dialog.showMessageBox(window, {
+        type: "error",
+        title: "Non-writable location",
+        message: `This location is not writable. 
+          You might have to open this directory or move it into downloads.`,
+        buttons: ["OK"]
+      })
+    }
+    throw new Error("failed")
+  }
+}
+
 const compress = async (info: any) => {
   let qIndex = queue.findIndex((q) => q.info.id === info.id)
   if (qIndex !== -1) queue[qIndex].started = true
@@ -793,8 +835,15 @@ const compress = async (info: any) => {
     return nextQueue(info)
   }
   const {width, height} = functions.parseNewDimensions(info.width, info.height, options.resizeWidth, options.resizeHeight, options.percentage, options.keepRatio)
-  
   let {dest, overwrite} = await mainFunctions.parseDest(info.source, info.dest, options.rename, options.format, width, height)
+  
+  try {
+    dest = await ensureWritable(dest)
+  } catch {
+    window?.webContents.send("conversion-finished", {id: info.id, output: info.source, skipped: true})
+    return nextQueue(info)
+  }
+
   if (!fs.existsSync(path.dirname(dest))) fs.mkdirSync(path.dirname(dest), {recursive: true})
   const historyIndex = history.findIndex((h) => h.id === info.id)
   if (historyIndex !== -1) history[historyIndex].dest = dest
@@ -861,12 +910,27 @@ const compress = async (info: any) => {
       buffer = await s.toBuffer()
       if (options.quality < 95) {
         if (!isAnimated && ext !== "avif" && ext !== "jxl") {
-          buffer = await imagemin.buffer(buffer, {plugins: [
-            imageminMozjpeg({quality: options.quality}),
-            imageminPngquant(),
-            imageminWebp({quality: options.quality}),
-            imageminGifsicle({optimizationLevel: 3})
-          ]})
+          const plugins = []
+
+          if (ext === "jpg" || ext === "jpeg") {
+            plugins.push(imageminMozjpeg({quality: options.quality}))
+          }
+
+          if (ext === "png") {
+            plugins.push(imageminPngquant())
+          }
+
+          if (ext === "webp") {
+            plugins.push(imageminWebp({quality: options.quality}))
+          }
+
+          if (ext === "gif") {
+            plugins.push(imageminGifsicle({optimizationLevel: 3}))
+          }
+
+          if (plugins.length) {
+            buffer = await imagemin.buffer(buffer, {plugins})
+          }
         }
       }
     }
@@ -978,12 +1042,27 @@ ipcMain.handle("compress-realtime", async (event, info: any) => {
       buffer = await s.toBuffer()
       if (options.quality < 95) {
         if (!isAnimated && ext !== "avif" && ext !== "jxl") {
-          buffer = await imagemin.buffer(buffer, {plugins: [
-            imageminMozjpeg({quality: options.quality}),
-            imageminPngquant(),
-            imageminWebp({quality: options.quality}),
-            imageminGifsicle({optimizationLevel: 3})
-          ]})
+          const plugins = []
+
+          if (ext === "jpg" || ext === "jpeg") {
+            plugins.push(imageminMozjpeg({quality: options.quality}))
+          }
+
+          if (ext === "png") {
+            plugins.push(imageminPngquant())
+          }
+
+          if (ext === "webp") {
+            plugins.push(imageminWebp({quality: options.quality}))
+          }
+
+          if (ext === "gif") {
+            plugins.push(imageminGifsicle({optimizationLevel: 3}))
+          }
+
+          if (plugins.length) {
+            buffer = await imagemin.buffer(buffer, {plugins})
+          }
         }
       }
     }
@@ -1139,6 +1218,8 @@ ipcMain.handle("select-files", async () => {
 
 ipcMain.handle("get-downloads-folder", async () => {
   if (store.has("downloads")) {
+    const bookmark = store.get("downloads-bookmark", "") as string
+    if (bookmark) app.startAccessingSecurityScopedResource(bookmark)
     return store.get("downloads")
   } else {
     const downloads = app.getPath("downloads")
@@ -1154,6 +1235,8 @@ ipcMain.handle("select-directory", async (event, dir: string) => {
       properties: ["openDirectory"]
     })
     dir = result.filePaths[0]
+    const bookmark = result.bookmarks?.[0]
+    if (bookmark) store.set("downloads-bookmark", bookmark)
   }
   if (dir) {
     store.set("downloads", dir)
@@ -1230,7 +1313,10 @@ const applicationMenu = () =>  {
       submenu: [
         {role: "reload"},
         {role: "forceReload"},
-        {role: "toggleDevTools"}
+        {role: "toggleDevTools"},
+        {type: "separator"},
+        {label: "Online Support", click: () => shell.openExternal(pack.repository)},
+        {label: "Privacy Policy", click: () => shell.openExternal(pack.privacyPolicy)}
       ]
     }
   ]
@@ -1258,13 +1344,6 @@ if (!singleLock) {
     window.removeMenu()
     window.setOpacity(windowOpacity / 100)
     applicationMenu()
-    if (process.platform === "darwin") {
-      if (process.env.DEVELOPMENT === "true") {
-        fs.chmodSync(path.join(__dirname, "../vendor/gifsicle"), "777")
-      } else {
-        fs.chmodSync(path.join(app.getAppPath(), "../app.asar.unpacked/dist/vendor/gifsicle"), "777")
-      }
-    }
     localShortcut.register(window, "Control+Shift+I", () => {
       window?.webContents.openDevTools()
       preview?.webContents.openDevTools()
