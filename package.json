@@ -29,13 +29,13 @@
   "build": {
     "appId": "com.moebytes.pixel-compressor",
     "productName": "Pixel Compressor",
-    "icon": "./assets/icon.png",
     "directories": {
       "buildResources": "assets",
       "output": "build"
     },
     "buildDependenciesFromSource": true,
     "mac": {
+      "icon": "assets/mas/icon.icns",
       "target": {
         "target": "mas",
         "arch": "arm64"
@@ -63,6 +63,7 @@
       }
     },
     "win": {
+      "icon": "assets/appx/icon.ico",
       "target": {
         "target": "appx",
         "arch": "x64"
@@ -92,12 +93,12 @@
       ]
     },
     "linux": {
+      "icon": "assets/icon.png",
       "target": {
         "target": "appImage",
         "arch": "x64"
       },
       "category": "Utility",
-      "icon": "./assets/icon.png",
       "extraResources": [
         {
           "from": "vendor/gifsicle",
