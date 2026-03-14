@@ -563,7 +563,7 @@ ipcMain.handle("flatten-directory", async () => {
   if (!window) return
   const result = await dialog.showOpenDialog(window, {
     properties: ["openDirectory"],
-    buttonLabel: "Flatten Directory",
+    buttonLabel: "Flatten",
     title: "Flatten Directory"
   })
   return result.filePaths[0]
