@@ -804,8 +804,8 @@ const ensureWritableDirectory = async (dir: string) => {
       await dialog.showMessageBox(window, {
         type: "error",
         title: "Non-writable location",
-        message: `This location is not writable. 
-          You might have to open this directory or move it into downloads.`,
+        message: `The output location is not writable. 
+          You need to open it explicitly using the folder icon.`,
         buttons: ["OK"]
       })
     }
