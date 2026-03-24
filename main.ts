@@ -9,6 +9,7 @@ import localShortcut from "electron-localshortcut"
 import Store from "electron-store"
 import dragAddon from "electron-click-drag-plugin"
 import fs from "fs"
+import os from "os"
 import imageSize from "image-size"
 import path from "path"
 import process from "process"
@@ -1222,7 +1223,8 @@ ipcMain.handle("get-downloads-folder", async () => {
     if (bookmark) app.startAccessingSecurityScopedResource(bookmark)
     return store.get("downloads")
   } else {
-    const downloads = app.getPath("downloads")
+    const downloads = process.platform === "darwin" ? `/Users/${os.userInfo().username}/Downloads`
+      : app.getPath("downloads")
     store.set("downloads", downloads)
     return downloads
   }
