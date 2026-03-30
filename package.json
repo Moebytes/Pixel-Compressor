@@ -1,6 +1,6 @@
 {
   "name": "pixel-compressor",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": "Moebytes",
   "description": "A cute image compressor!",
   "main": "dist/main/index.js",

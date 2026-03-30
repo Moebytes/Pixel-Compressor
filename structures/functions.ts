@@ -23,7 +23,7 @@ export default class Functions {
     public static cleanTitle = (str: string) => {
         const ext = str.split(".").pop() ?? ""
         const split = str.match(/.{1,30}/g)?.join(" ").replace(`.${ext}`, "")!
-        return `${split.slice(0, 70)}.${ext}`
+        return `${split.slice(0, 50)}.${ext}`
     }
 
     public static getType = (str: string) => {

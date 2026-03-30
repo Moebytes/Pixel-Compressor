@@ -295,8 +295,8 @@ const FileContainer: React.FunctionComponent<FileContainerProps> = (props: FileC
                 <div className="file-group-top">
                     <div className="file-name">
                         <p className="file-text bigger"><span className="hover" onMouseDown={(event: any) => event.stopPropagation()} 
-                            onClick={() => openLocation(true)}>{output ? functions.cleanTitle(functions.basename(output)) : 
-                                functions.cleanTitle(functions.basename(props.source))}</span></p>
+                            onClick={() => openLocation(true)}>{output ? functions.cleanTitle(functions.basename(output, true)) : 
+                                functions.cleanTitle(functions.basename(props.source, true))}</span></p>
                         <p className="file-text bigger pink">{diffPercentage()}</p>
                     </div>
                     <div className="file-info">

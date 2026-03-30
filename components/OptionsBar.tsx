@@ -69,15 +69,15 @@ const OptionsBar: React.FunctionComponent = () => {
         <section className="options-bar-container">
             <div className="options-bar">
                 <div className="options-bar-row">
-                    <div className="options-bar-box">
+                    <div className="options-bar-box" style={{width: "92%"}}>
                         <p className="options-bar-text">Quality:</p>
                         <Slider className="options-slider" onChange={(value) => setQuality(value as number)} min={1} max={100} step={1} value={quality}/>
                         <p className="options-bar-text" style={{width: "50px"}}>{quality}%</p>
                     </div>
-                    <div className="options-bar-box">
+                    {/*<div className="options-bar-box">
                         <p className="options-bar-text">Ignore Under:</p>
                         <input className="options-bar-input wide" type="text" value={ignoreBelow} onChange={handleIgnoreBelow}/>
-                    </div>
+                    </div>*/}
                 </div>
                 <div className="options-bar-row">
                     <div className="options-bar-box">

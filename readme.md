@@ -7,7 +7,6 @@ A cute image compressor!
 ### Features:
 - Compress and resize images (JPG, PNG, WEBP, AVIF)
 - Compress and resize GIFs
-- Ignore images under a certain file size (to avoid over-compression)
 - Preview before and after images (right click on the thumbnails)
 - Delete duplicate images (found by perceptual hash)
 
@@ -24,8 +23,6 @@ These are all the special name replacements:
 
 ### Titlebar Buttons
 There are many utility functions on the titlebar. They do the following:
-
-MP3 - Select an mp3 and an image and the image will get added as the cover art.
 
 VTT - If ASS or SRT files are selected, they will be converted to VTT subtitles.
 

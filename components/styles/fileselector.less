@@ -13,10 +13,21 @@
     justify-content: center;
     margin-bottom: 10px;
     width: 100%;
-    height: 22vw;
     &:focus {
         outline: none;
     }
+}
+
+.file-selector-hover {
+    margin: auto;
+    position: absolute;
+    z-index: 100;
+    top: 0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    height: 95%;
+    width: 78%;
 }
 
 .file-selector-img {
@@ -29,25 +40,27 @@
     width: 79%;
     height: auto;
     border-radius: 7px;
+    gap: 20px;
+    padding: 20px;
 }
 
-.file-selector-img-text {
+.file-selector-cloud {
+    color: var(--iconColor);
+    width: auto;
+    height: 50px;
+}
+
+.file-selector-title {
     color: var(--textColor2);
-    transition: filter 0.3s;
-    position: absolute;
-    width: 100%;
-    height: auto;
-    z-index: 50;
+    font-family: "GenEi M Gothic v2";
+    font-weight: bold;
+    font-size: 35px;
+    transition: color 0.3s;
 }
 
-.file-selector-hover {
-    margin: auto;
-    position: absolute;
-    z-index: 100;
-    top: 0; 
-    bottom: 0; 
-    left: 0; 
-    right: 0;
-    height: 70%;
-    width: 65%;
+.file-selector-text {
+    color: var(--textColor2);
+    font-family: "GenEi M Gothic v2";
+    font-size: 30px;
+    transition: color 0.3s;
 }

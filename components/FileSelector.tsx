@@ -5,8 +5,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 import React, {useEffect, useEffectEvent, useState} from "react"
-import FileSelectorIcon from "../assets/svg/file-selector.svg"
-import FileSelectorDragIcon from "../assets/svg/file-selector-drag.svg"
+import CloudIcon from "../assets/svg/cloud.svg"
 import functions from "../structures/functions"
 import "./styles/fileselector.less"
 
@@ -79,9 +78,9 @@ const FileSelector: React.FunctionComponent = (props) => {
     return (
         <section className="file-selector" onDrop={drop} onDragOver={dragOver} onDragLeave={dragLeave}>
             <div className="file-selector-img">
-                {drag ?
-                <FileSelectorDragIcon className="file-selector-img-text" style={{filter: hover ? "brightness(0) invert(1)" : ""}}/> :
-                <FileSelectorIcon className="file-selector-img-text" style={{filter: hover ? "brightness(0) invert(1)" : ""}}/>}
+                <CloudIcon className="file-selector-cloud"/>
+                <span className="file-selector-title" style={{color: hover || drag ? "white" : ""}}>Select Files</span>
+                <span className="file-selector-text" style={{color: hover || drag ? "white" : ""}}>png, jpg, gif</span>
             </div>
             <div className="file-selector-hover" onClick={upload} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}></div>
         </section>
