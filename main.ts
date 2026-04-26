@@ -801,16 +801,12 @@ const ensureWritableDirectory = async (dir: string) => {
     fs.writeFileSync(test, "")
     fs.unlinkSync(test)
   } catch {
-    if (window) {
-      await dialog.showMessageBox(window, {
-        type: "error",
-        title: "Non-writable location",
-        message: `The output location is not writable. 
-          You need to open it explicitly using the folder icon.`,
-        buttons: ["OK"]
+      const result = await dialog.showOpenDialog(window, {
+          defaultPath: dir,
+          properties: ["createDirectory", "openDirectory"]
       })
-    }
-    throw new Error("failed")
+      dir = result.filePaths[0]
+      if (!dir) throw new Error("failed")
   }
 }
 
