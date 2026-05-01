@@ -42,9 +42,14 @@ Flatten - Flattens a directory, so that all files in all sub-directories are mov
 
 Our design is available here: https://www.figma.com/design/lTUtTd5bAHSxvg3uTzNWIA/Pixel-Compressor
 
-### Installation
+### Purchase
 
-Download from [releases](https://github.com/Moebytes/Image-Compressor/releases).
+<a href="https://apps.microsoft.com/store/detail/9P751MM4CN08" target="_blank">
+  <img src="assets/images/microsoft-store.svg" style="height:60px"/>
+</a>
+<br/><br/>
+
+Linux version is free and available in [releases](https://github.com/Moebytes/Pixel-Compressor/releases).
 
 ### Also See
 
