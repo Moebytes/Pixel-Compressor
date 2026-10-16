@@ -347,11 +347,11 @@ const removeDoubles = async (images: string[], dontProcessAll?: boolean) => {
     const page1 = `${path.dirname(doubleImages[i])}/${path.basename(doubleImages[i], path.extname(doubleImages[i]))}.1${path.extname(doubleImages[i])}`
     const page2 = `${path.dirname(doubleImages[i])}/${path.basename(doubleImages[i], path.extname(doubleImages[i]))}.2${path.extname(doubleImages[i])}`
     await sharp(doubleImages[i], {limitInputPixels: false})
-        .extract({left: newWidth, top: 0, width: newWidth, height: height})
-        .toFile(page1)
+      .extract({left: 0, top: 0, width: newWidth, height})
+      .toFile(page1)
     await sharp(doubleImages[i], {limitInputPixels: false})
-        .extract({left: 0, top: 0, width: newWidth, height: height})
-        .toFile(page2)
+      .extract({left: newWidth, top: 0, width: newWidth, height})
+      .toFile(page2)
   }
 
   const promiseArray: any[] = []
