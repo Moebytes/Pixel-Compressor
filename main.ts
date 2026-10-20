@@ -1219,7 +1219,7 @@ ipcMain.handle("get-downloads-folder", async () => {
     if (bookmark) app.startAccessingSecurityScopedResource(bookmark)
     return store.get("downloads")
   } else {
-    const downloads = process.platform === "darwin" ? `/Users/${os.userInfo().username}/Downloads`
+    const downloads = process.platform === "darwin" ? ``
       : app.getPath("downloads")
     store.set("downloads", downloads)
     return downloads
